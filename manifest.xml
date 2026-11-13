@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<iq:manifest version="3" xmlns:iq="http://www.garmin.com/xml/connectiq">
+    <!-- Widget "Pripravenost": skore pripravenosti z dat intervals.icu -->
+    <iq:application id="2de113d694ab4575bc0cadee4c950ea9"
+                    type="widget"
+                    name="@Strings.AppName"
+                    entry="ReadinessApp"
+                    launcherIcon="@Drawables.LauncherIcon"
+                    minApiLevel="3.1.0">
+        <iq:products>
+            <iq:product id="vivoactive4s"/>
+            <iq:product id="venu3s"/>
+            <iq:product id="venu3"/>
+        </iq:products>
+        <iq:permissions>
+            <iq:uses-permission id="Communications"/>
+        </iq:permissions>
+        <iq:languages>
+            <iq:language>eng</iq:language>
+        </iq:languages>
+        <iq:barrels/>
+    </iq:application>
+</iq:manifest>

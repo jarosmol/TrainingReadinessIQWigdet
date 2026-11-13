@@ -1,0 +1,17 @@
+# Vas API kluc - nikdy necommitovat (vzor je v properties.example.xml)
+resources/properties/properties.xml
+
+# Vystupy zostavenia
+bin/
+*.prg
+*.iq
+*.prg.debug.xml
+
+# Developer key (podpisovy kluc) - nikdy nezdielat
+*.der
+*.pem
+
+# Editor a system
+.vscode/
+.DS_Store
+Thumbs.db

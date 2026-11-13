@@ -1,0 +1,9 @@
+<!-- Nastavenia v aplikacii Garmin Connect (funguju len pri instalacii z Connect IQ obchodu / beta) -->
+<settings>
+    <setting propertyKey="@Properties.athleteId" title="@Strings.AthleteIdTitle">
+        <settingConfig type="alphaNumeric" />
+    </setting>
+    <setting propertyKey="@Properties.apiKey" title="@Strings.ApiKeyTitle">
+        <settingConfig type="alphaNumeric" />
+    </setting>
+</settings>

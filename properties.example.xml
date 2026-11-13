@@ -1,0 +1,13 @@
+<!--
+    Sem vlozte svoje udaje PRED skompilovanim.
+    Pri aplikacii nahranej cez USB (sideload) sa nastavenia v Garmin Connect
+    nezobrazia, preto sa hodnoty beru priamo odtialto.
+
+    apiKey    = kluc z intervals.icu > Settings > Developer Settings
+    athleteId = "0" znamena ucet, ktoremu patri API kluc (netreba menit).
+                Ak by to nefungovalo, zadajte svoje ID v tvare i123456.
+-->
+<properties>
+    <property id="athleteId" type="string">0</property>
+    <property id="apiKey" type="string">SEM_VLOZTE_API_KLUC</property>
+</properties>

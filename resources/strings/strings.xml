@@ -1,0 +1,5 @@
+<strings>
+    <string id="AppName">Pripravenost</string>
+    <string id="AthleteIdTitle">intervals.icu ID atleta (0 = moj ucet)</string>
+    <string id="ApiKeyTitle">intervals.icu API kluc</string>
+</strings>
