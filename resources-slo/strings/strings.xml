@@ -1,0 +1,47 @@
+<!-- Slovencina - pouzije sa na hodinkach nastavenych na slovencinu. Bez diakritiky. -->
+<strings>
+    <string id="AppName">Pripravenost</string>
+    <string id="AthleteIdTitle">intervals.icu ID atleta (0 = moj ucet)</string>
+    <string id="ApiKeyTitle">intervals.icu API kluc</string>
+    <string id="Title">PRIPRAVENOST</string>
+    <string id="LblExcellent">Vyborna</string>
+    <string id="LblGood">Dobra</string>
+    <string id="LblFair">Priemerna</string>
+    <string id="LblLow">Nizka</string>
+    <string id="LblVeryLow">Velmi nizka</string>
+    <string id="LblNoData">Malo dat</string>
+    <string id="ErrKey">Zly API kluc / ID</string>
+    <string id="ErrId">Nespravne ID atleta</string>
+    <string id="ErrPhone">Telefon nepripojeny</string>
+    <string id="ErrTimeout">Vyprsal cas spojenia</string>
+    <string id="ErrTooBig">Odpoved prilis velka</string>
+    <string id="ErrInvalid">Neplatna odpoved</string>
+    <string id="ErrCode">Chyba $1$</string>
+    <string id="AgeNow">prave teraz</string>
+    <string id="AgeMin">pred $1$ min</string>
+    <string id="AgeHour">pred $1$ h</string>
+    <string id="AgeDay">pred $1$ d</string>
+    <string id="Loading">Nacitavam...</string>
+    <string id="NoKey1">Chyba API kluc</string>
+    <string id="NoKey2">Zadajte ho v nastaveniach</string>
+    <string id="NoKey3">v Garmin Connect</string>
+    <string id="Retry1">Stlacte pre</string>
+    <string id="Retry2">opakovanie</string>
+    <string id="Load1">Pripravenost</string>
+    <string id="Load2">Nacitavam</string>
+    <string id="Load3">data...</string>
+    <string id="Form">Forma</string>
+    <string id="Sleep">Spanok</string>
+    <string id="SleepShort">Sp</string>
+    <string id="Rhr">Tep</string>
+    <string id="Hrv">HRV</string>
+    <string id="Bb">BB</string>
+    <string id="Factors">ZLOZKY SKORE</string>
+    <string id="BodyBat">BodyBat</string>
+    <string id="NotMeasured">nemeria</string>
+    <string id="Max">max</string>
+    <string id="DetailFooter">skore  |  dnes / priemer</string>
+    <string id="Last7">POSLEDNYCH 7 DNI</string>
+    <string id="Refresh">Obnovte data</string>
+    <string id="DayOfMonth">den v mesiaci</string>
+</strings>

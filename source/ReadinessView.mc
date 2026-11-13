@@ -4,8 +4,9 @@ import Toybox.Lang;
 import Toybox.Time;
 import Toybox.WatchUi;
 
-// Texty su bez diakritiky, aby sa zobrazili spravne aj na hodinkach,
-// ktorych systemove pisma nemaju slovenske znaky.
+// Texty su v resources/strings (anglictina, predvolena) a resources-slo/strings
+// (slovencina). Hodinky vyberu jazyk podla svojho nastavenia. Slovenske texty su
+// bez diakritiky, aby sa zobrazili aj na hodinkach bez slovenskych znakov v pisme.
 class ReadinessView extends WatchUi.View {
 
     const CACHE_KEY = "cache";
@@ -17,9 +18,53 @@ class ReadinessView extends WatchUi.View {
     var _status = :idle;            // :idle, :loading, :nokey, :error
     var _errorCode = 0;
     var _page = 0;                  // 0 prehlad, 1 zlozky, 2 historia
+    var _t;                         // nacitane texty v jazyku hodiniek
 
     function initialize() {
         View.initialize();
+        _t = {
+            "Title" => WatchUi.loadResource(Rez.Strings.Title),
+            "LblExcellent" => WatchUi.loadResource(Rez.Strings.LblExcellent),
+            "LblGood" => WatchUi.loadResource(Rez.Strings.LblGood),
+            "LblFair" => WatchUi.loadResource(Rez.Strings.LblFair),
+            "LblLow" => WatchUi.loadResource(Rez.Strings.LblLow),
+            "LblVeryLow" => WatchUi.loadResource(Rez.Strings.LblVeryLow),
+            "LblNoData" => WatchUi.loadResource(Rez.Strings.LblNoData),
+            "ErrKey" => WatchUi.loadResource(Rez.Strings.ErrKey),
+            "ErrId" => WatchUi.loadResource(Rez.Strings.ErrId),
+            "ErrPhone" => WatchUi.loadResource(Rez.Strings.ErrPhone),
+            "ErrTimeout" => WatchUi.loadResource(Rez.Strings.ErrTimeout),
+            "ErrTooBig" => WatchUi.loadResource(Rez.Strings.ErrTooBig),
+            "ErrInvalid" => WatchUi.loadResource(Rez.Strings.ErrInvalid),
+            "ErrCode" => WatchUi.loadResource(Rez.Strings.ErrCode),
+            "AgeNow" => WatchUi.loadResource(Rez.Strings.AgeNow),
+            "AgeMin" => WatchUi.loadResource(Rez.Strings.AgeMin),
+            "AgeHour" => WatchUi.loadResource(Rez.Strings.AgeHour),
+            "AgeDay" => WatchUi.loadResource(Rez.Strings.AgeDay),
+            "Loading" => WatchUi.loadResource(Rez.Strings.Loading),
+            "NoKey1" => WatchUi.loadResource(Rez.Strings.NoKey1),
+            "NoKey2" => WatchUi.loadResource(Rez.Strings.NoKey2),
+            "NoKey3" => WatchUi.loadResource(Rez.Strings.NoKey3),
+            "Retry1" => WatchUi.loadResource(Rez.Strings.Retry1),
+            "Retry2" => WatchUi.loadResource(Rez.Strings.Retry2),
+            "Load1" => WatchUi.loadResource(Rez.Strings.Load1),
+            "Load2" => WatchUi.loadResource(Rez.Strings.Load2),
+            "Load3" => WatchUi.loadResource(Rez.Strings.Load3),
+            "Form" => WatchUi.loadResource(Rez.Strings.Form),
+            "Sleep" => WatchUi.loadResource(Rez.Strings.Sleep),
+            "SleepShort" => WatchUi.loadResource(Rez.Strings.SleepShort),
+            "Rhr" => WatchUi.loadResource(Rez.Strings.Rhr),
+            "Hrv" => WatchUi.loadResource(Rez.Strings.Hrv),
+            "Bb" => WatchUi.loadResource(Rez.Strings.Bb),
+            "Factors" => WatchUi.loadResource(Rez.Strings.Factors),
+            "BodyBat" => WatchUi.loadResource(Rez.Strings.BodyBat),
+            "NotMeasured" => WatchUi.loadResource(Rez.Strings.NotMeasured),
+            "Max" => WatchUi.loadResource(Rez.Strings.Max),
+            "DetailFooter" => WatchUi.loadResource(Rez.Strings.DetailFooter),
+            "Last7" => WatchUi.loadResource(Rez.Strings.Last7),
+            "Refresh" => WatchUi.loadResource(Rez.Strings.Refresh),
+            "DayOfMonth" => WatchUi.loadResource(Rez.Strings.DayOfMonth)
+        };
         _fetcher = new DataFetcher();
         var cached = Application.Storage.getValue(CACHE_KEY);
         if (cached instanceof Lang.Dictionary && cached["t"] != null) {
@@ -66,6 +111,11 @@ class ReadinessView extends WatchUi.View {
 
     // ---------- pomocne funkcie ----------
 
+    // Text v jazyku hodiniek
+    function tx(key) {
+        return _t[key];
+    }
+
     static function scoreColor(s) {
         if (s == null) { return Graphics.COLOR_LT_GRAY; }
         if (s >= 80) { return 0x00C853; }   // zelena
@@ -75,13 +125,13 @@ class ReadinessView extends WatchUi.View {
         return 0xFF3D00;                    // cervena
     }
 
-    static function scoreLabel(s) {
-        if (s == null) { return "Malo dat"; }
-        if (s >= 80) { return "Vyborna"; }
-        if (s >= 60) { return "Dobra"; }
-        if (s >= 40) { return "Priemerna"; }
-        if (s >= 25) { return "Nizka"; }
-        return "Velmi nizka";
+    function scoreLabel(s) {
+        if (s == null) { return tx("LblNoData"); }
+        if (s >= 80) { return tx("LblExcellent"); }
+        if (s >= 60) { return tx("LblGood"); }
+        if (s >= 40) { return tx("LblFair"); }
+        if (s >= 25) { return tx("LblLow"); }
+        return tx("LblVeryLow");
     }
 
     static function r(x) {
@@ -116,27 +166,27 @@ class ReadinessView extends WatchUi.View {
 
     function errorText() {
         var c = _errorCode;
-        if (c == 401 || c == 403) { return "Zly API kluc / ID"; }
-        if (c == 404) { return "Nespravne ID atleta"; }
-        if (c == -104 || c == -2) { return "Telefon nepripojeny"; }
-        if (c == -300) { return "Vyprsal cas spojenia"; }
-        if (c == -402 || c == -403) { return "Odpoved prilis velka"; }
-        if (c == -400) { return "Neplatna odpoved"; }
-        return "Chyba " + c.format("%d");
+        if (c == 401 || c == 403) { return tx("ErrKey"); }
+        if (c == 404) { return tx("ErrId"); }
+        if (c == -104 || c == -2) { return tx("ErrPhone"); }
+        if (c == -300) { return tx("ErrTimeout"); }
+        if (c == -402 || c == -403) { return tx("ErrTooBig"); }
+        if (c == -400) { return tx("ErrInvalid"); }
+        return Lang.format(tx("ErrCode"), [c.format("%d")]);
     }
 
     function ageText() {
         if (_fetchedAt == 0) { return ""; }
         var mins = (Time.now().value() - _fetchedAt) / 60;
-        if (mins < 1) { return "prave teraz"; }
-        if (mins < 60) { return "pred " + mins.format("%d") + " min"; }
+        if (mins < 1) { return tx("AgeNow"); }
+        if (mins < 60) { return Lang.format(tx("AgeMin"), [mins.format("%d")]); }
         var hrs = mins / 60;
-        if (hrs < 24) { return "pred " + hrs.format("%d") + " h"; }
-        return "pred " + (hrs / 24).format("%d") + " d";
+        if (hrs < 24) { return Lang.format(tx("AgeHour"), [hrs.format("%d")]); }
+        return Lang.format(tx("AgeDay"), [(hrs / 24).format("%d")]);
     }
 
     function footerText() {
-        if (_status == :loading) { return "Nacitavam..."; }
+        if (_status == :loading) { return tx("Loading"); }
         if (_status == :error) { return errorText(); }
         return ageText();
     }
@@ -154,14 +204,14 @@ class ReadinessView extends WatchUi.View {
         var cy = h / 2;
 
         if (_status == :nokey) {
-            drawMessage(dc, cx, cy, "Chyba API kluc", "Vlozte ho do", "properties.xml");
+            drawMessage(dc, cx, cy, tx("NoKey1"), tx("NoKey2"), tx("NoKey3"));
             return;
         }
         if (_result == null) {
             if (_status == :error) {
-                drawMessage(dc, cx, cy, errorText(), "Stlacte pre", "opakovanie");
+                drawMessage(dc, cx, cy, errorText(), tx("Retry1"), tx("Retry2"));
             } else {
-                drawMessage(dc, cx, cy, "Pripravenost", "Nacitavam", "data...");
+                drawMessage(dc, cx, cy, tx("Load1"), tx("Load2"), tx("Load3"));
             }
             return;
         }
@@ -211,7 +261,7 @@ class ReadinessView extends WatchUi.View {
         var vc = Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER;
 
         dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(cx, cy - inner * 0.66, Graphics.FONT_XTINY, "PRIPRAVENOST", vc);
+        dc.drawText(cx, cy - inner * 0.66, Graphics.FONT_XTINY, tx("Title"), vc);
 
         dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
         dc.drawText(cx, cy - inner * 0.27, Graphics.FONT_NUMBER_MEDIUM,
@@ -230,16 +280,16 @@ class ReadinessView extends WatchUi.View {
         // kratsie popisky a medzery
         var small = w < 300;
         var gap = small ? "  " : "   ";
-        var line1 = "Forma " + (form[1] == null ? "--" : signed(form[1]) + "%")
-                  + gap + (small ? "Sp " : "Spanok ") + hhmm(sleep[1]);
+        var line1 = tx("Form") + " " + (form[1] == null ? "--" : signed(form[1]) + "%")
+                  + gap + (small ? tx("SleepShort") : tx("Sleep")) + " " + hhmm(sleep[1]);
         // Body Battery sa zobrazi namiesto HRV, ak sa pouzilo v skore
         var bb = part("bb");
-        var hrvText = hrv[1] == null ? "HRV --" : "HRV " + r(hrv[1]).format("%d");
+        var hrvText = tx("Hrv") + " " + (hrv[1] == null ? "--" : r(hrv[1]).format("%d"));
         if (bb != null && bb[0] != null) {
-            hrvText = "BB " + r(bb[1]).format("%d");
+            hrvText = tx("Bb") + " " + r(bb[1]).format("%d");
         }
         var line2 = hrvText
-                  + gap + "Tep " + (rhr[1] == null ? "--" : r(rhr[1]).format("%d"));
+                  + gap + tx("Rhr") + " " + (rhr[1] == null ? "--" : r(rhr[1]).format("%d"));
 
         dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
         dc.drawText(cx, cy + inner * 0.40, Graphics.FONT_XTINY, line1, vc);
@@ -257,7 +307,7 @@ class ReadinessView extends WatchUi.View {
         var top = cy - rowH * 2.2;
 
         dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(cx, top, Graphics.FONT_XTINY, "ZLOZKY SKORE",
+        dc.drawText(cx, top, Graphics.FONT_XTINY, tx("Factors"),
             Graphics.TEXT_JUSTIFY_CENTER | vc);
 
         var form = _result["form"];
@@ -269,19 +319,19 @@ class ReadinessView extends WatchUi.View {
         // 4. stlpec: pocet dni v priemere (HRV, tep) - ak ich je malo, namiesto
         // skore sa zobrazi napr. "3d" (zbiera sa baseline)
         var rows = [
-            ["Forma", form[0], form[1] == null ? "" : signed(form[1]) + "%", null],
-            ["HRV", hrv[0], hrv[1] == null ? "nemeria" :
+            [tx("Form"), form[0], form[1] == null ? "" : signed(form[1]) + "%", null],
+            [tx("Hrv"), hrv[0], hrv[1] == null ? tx("NotMeasured") :
                 r(hrv[1]).format("%d") + (hrv[2] == null ? "" : "/" + r(hrv[2]).format("%d")),
                 hrv[1] == null ? null : baseDays(hrv)],
-            ["Spanok", sleep[0], hhmm(sleep[1]), null],
-            ["Tep", rhr[0], rhr[1] == null ? "" :
+            [tx("Sleep"), sleep[0], hhmm(sleep[1]), null],
+            [tx("Rhr"), rhr[0], rhr[1] == null ? "" :
                 r(rhr[1]).format("%d") + (rhr[2] == null ? "" : "/" + r(rhr[2]).format("%d")),
                 rhr[1] == null ? null : baseDays(rhr)]
         ];
 
         // Ak sa v skore pouzilo Body Battery (namiesto HRV), ukaz ho v riadku HRV
         if (bb != null && bb[0] != null) {
-            rows[1] = ["BodyBat", bb[0], "max " + r(bb[1]).format("%d"), null];
+            rows[1] = [tx("BodyBat"), bb[0], tx("Max") + " " + r(bb[1]).format("%d"), null];
         }
 
         var xL = cx - w * 0.36;
@@ -309,7 +359,7 @@ class ReadinessView extends WatchUi.View {
         }
 
         dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(cx, top + rowH * 5.6, Graphics.FONT_XTINY, "skore  |  dnes / priemer",
+        dc.drawText(cx, top + rowH * 5.6, Graphics.FONT_XTINY, tx("DetailFooter"),
             Graphics.TEXT_JUSTIFY_CENTER | vc);
     }
 
@@ -320,10 +370,10 @@ class ReadinessView extends WatchUi.View {
         var labels = part("histDays");
 
         dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(cx, cy - h * 0.30, Graphics.FONT_XTINY, "POSLEDNYCH 7 DNI", vcC);
+        dc.drawText(cx, cy - h * 0.30, Graphics.FONT_XTINY, tx("Last7"), vcC);
 
         if (hist == null || labels == null) {
-            dc.drawText(cx, cy, Graphics.FONT_XTINY, "Obnovte data", vcC);
+            dc.drawText(cx, cy, Graphics.FONT_XTINY, tx("Refresh"), vcC);
             return;
         }
 
@@ -360,6 +410,6 @@ class ReadinessView extends WatchUi.View {
 
         dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
         dc.drawLine(left, baseY, left + areaW, baseY);
-        dc.drawText(cx, baseY + fh * 1.75, Graphics.FONT_XTINY, "den v mesiaci", vcC);
+        dc.drawText(cx, baseY + fh * 1.75, Graphics.FONT_XTINY, tx("DayOfMonth"), vcC);
     }
 }

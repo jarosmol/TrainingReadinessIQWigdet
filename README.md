@@ -86,6 +86,46 @@ a hodinky musia byt s telefonom spojene.
 
 ---
 
+## Instalacia cez Connect IQ obchod (beta)
+
+Beta verziu vidite a instalujete iba vy, Garmin ju neschvaluje. Instaluje sa cez aplikaciu
+Connect IQ v telefone a **API kluc sa zadava v aplikacii Garmin Connect**, nie v subore.
+
+### 1. Pred exportom: kluc von zo suboru
+V `resources/properties/properties.xml` vratte `SEM_VLOZTE_API_KLUC` (alebo skopirujte
+`properties.example.xml` znova). Hodnoty z tohto suboru sa stavaju predvolenymi nastaveniami
+aplikacie v obchode. Na testovanie v simulatore zadajte kluc cez
+**File → Edit Persistent Storage → Edit Application.Properties data**.
+
+### 2. Export
+1. V SDK Manageri (Devices) stiahnite **vsetky** hodinky z manifestu: vivoactive 4S, Venu 3, Venu 3S,
+   Forerunner 255 Music, Forerunner 255S Music. Alebo nepotrebne odstrante cez **Monkey C: Edit Products**.
+2. `Ctrl+Shift+P` → **Monkey C: Export Project** → vznikne subor `.iq` (jeden pre vsetky hodinky).
+
+### 3. Nahratie
+1. Na **apps.garmin.com/developer** sa prihlaste (Garmin ucet; pri prvom prihlaseni prijmite
+   podmienky pre vyvojarov).
+2. **Upload an App** → vyberte subor `.iq` → zaskrtnite **Beta App**.
+3. Vyplnte nazov, popis a ikonu – vsetko je pripravene v priecinku `store/` (`popis.md`, `ikona_500.png`, snimky).
+4. Odoslite. Beta je dostupna hned.
+
+### 4. Instalacia a nastavenie
+1. V telefone otvorte **Connect IQ** → **Moje aplikacie** (alebo vyhladajte nazov) → nainstalujte.
+2. V aplikacii **Garmin Connect** → zariadenie → **Aplikacie Connect IQ** → widget → **Nastavenia**.
+3. Vlozte **API kluc**, **ID atleta** nechajte `0`. Widget si po ulozeni stiahne data.
+
+Ak mate widget nahraty aj cez USB, najprv ho z hodiniek zmazte (GARMIN/APPS), aby ste nemali dve kopie.
+
+Nova verzia: zvyste cislo verzie pri nahravani v obchode a nahrajte novy `.iq` k tej istej aplikacii.
+
+---
+
+## Jazyk
+Widget pouzije jazyk hodiniek: **anglictina** (predvolena) alebo **slovencina**. Texty su v
+`resources/strings/strings.xml` (EN) a `resources-slo/strings/strings.xml` (SK).
+
+---
+
 ## Pridanie dalsich hodiniek (napr. Venu 4, Forerunner 170)
 Vo VS Code: `Ctrl+Shift+P` → **Monkey C: Edit Products** → zaskrtnite hodinky.
 Najprv ich stiahnite v SDK Manageri (Devices). Rozlozenie obrazovky sa prisposobi samo.
@@ -112,6 +152,10 @@ manifest.xml                    hodinky, opravnenia, typ aplikacie (widget)
 monkey.jungle                   konfiguracia zostavenia
 properties.example.xml          vzor pre API kluc (skopirujte do resources/properties/properties.xml)
 resources/properties/           API kluc a ID atleta (+ nastavenia pre Garmin Connect)
+resources/strings/              anglicke texty (predvolene)
+resources-slo/strings/          slovenske texty
+resources-vivoactive4s/         ikona 30x30 pre Vivoactive 4S
+store/                          podklady do Connect IQ obchodu (popis, ikona, snimky)
 source/ReadinessApp.mc          vstupny bod aplikacie
 source/ReadinessView.mc         kreslenie obrazovky, cache, chybove hlasenia
 source/ReadinessDelegate.mc     ovladanie (tlacidla / dotyk)

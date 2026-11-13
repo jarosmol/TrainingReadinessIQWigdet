@@ -1,5 +1,47 @@
+<!-- Anglictina (predvolena). $1$ = cislo doplnene v kode. -->
 <strings>
-    <string id="AppName">Pripravenost</string>
-    <string id="AthleteIdTitle">intervals.icu ID atleta (0 = moj ucet)</string>
-    <string id="ApiKeyTitle">intervals.icu API kluc</string>
+    <string id="AppName">Readiness</string>
+    <string id="AthleteIdTitle">intervals.icu athlete ID (0 = my account)</string>
+    <string id="ApiKeyTitle">intervals.icu API key</string>
+    <string id="Title">READINESS</string>
+    <string id="LblExcellent">Excellent</string>
+    <string id="LblGood">Good</string>
+    <string id="LblFair">Fair</string>
+    <string id="LblLow">Low</string>
+    <string id="LblVeryLow">Very low</string>
+    <string id="LblNoData">Not enough data</string>
+    <string id="ErrKey">Wrong API key / ID</string>
+    <string id="ErrId">Wrong athlete ID</string>
+    <string id="ErrPhone">Phone not connected</string>
+    <string id="ErrTimeout">Connection timed out</string>
+    <string id="ErrTooBig">Response too large</string>
+    <string id="ErrInvalid">Invalid response</string>
+    <string id="ErrCode">Error $1$</string>
+    <string id="AgeNow">just now</string>
+    <string id="AgeMin">$1$ min ago</string>
+    <string id="AgeHour">$1$ h ago</string>
+    <string id="AgeDay">$1$ d ago</string>
+    <string id="Loading">Loading...</string>
+    <string id="NoKey1">API key missing</string>
+    <string id="NoKey2">Enter it in settings</string>
+    <string id="NoKey3">in Garmin Connect</string>
+    <string id="Retry1">Press to</string>
+    <string id="Retry2">retry</string>
+    <string id="Load1">Readiness</string>
+    <string id="Load2">Loading</string>
+    <string id="Load3">data...</string>
+    <string id="Form">Form</string>
+    <string id="Sleep">Sleep</string>
+    <string id="SleepShort">Sl</string>
+    <string id="Rhr">RHR</string>
+    <string id="Hrv">HRV</string>
+    <string id="Bb">BB</string>
+    <string id="Factors">SCORE FACTORS</string>
+    <string id="BodyBat">BodyBat</string>
+    <string id="NotMeasured">n/a</string>
+    <string id="Max">max</string>
+    <string id="DetailFooter">score  |  today / avg</string>
+    <string id="Last7">LAST 7 DAYS</string>
+    <string id="Refresh">Refresh data</string>
+    <string id="DayOfMonth">day of month</string>
 </strings>
