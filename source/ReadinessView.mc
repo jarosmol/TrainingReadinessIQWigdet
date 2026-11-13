@@ -281,8 +281,8 @@ class ReadinessView extends WatchUi.View {
         // kratsie popisky a medzery
         var small = w < 300;
         var gap = small ? "  " : "   ";
-        var line1 = tx("Form") + " " + (form[1] == null ? "--" : signed(form[1]) + "%")
-                  + gap + (small ? tx("SleepShort") : tx("Sleep")) + " " + hhmm(sleep[1]);
+        // spanok je oznaceny ikonou mesiaca (kratsie nez slovo, rovnake v kazdom jazyku)
+        var line1 = tx("Form") + " " + (form[1] == null ? "--" : signed(form[1]) + "%") + gap;
         // Body Battery sa zobrazi namiesto HRV, ak sa pouzilo v skore
         var bb = part("bb");
         var hrvText = tx("Hrv") + " " + (hrv[1] == null ? "--" : r(hrv[1]).format("%d"));
@@ -293,11 +293,36 @@ class ReadinessView extends WatchUi.View {
                   + gap + tx("Rhr") + " " + (rhr[1] == null ? "--" : r(rhr[1]).format("%d"));
 
         dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(cx, cy + inner * 0.40, Graphics.FONT_XTINY, line1, vc);
+        drawSleepLine(dc, cx, cy + inner * 0.40, line1, hhmm(sleep[1]));
         dc.drawText(cx, cy + inner * 0.60, Graphics.FONT_XTINY, line2, vc);
 
         dc.setColor(_status == :error ? 0xFF8A00 : Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
         dc.drawText(cx, cy + inner * 0.82, Graphics.FONT_XTINY, footerText(), vc);
+    }
+
+    // Riadok "<prefix> [mesiac] <cas spanku>" vycentrovany na cx.
+    function drawSleepLine(dc, cx, y, prefix, value) {
+        var font = Graphics.FONT_XTINY;
+        var fh = dc.getFontHeight(font);
+        var r = fh * 0.30;
+        if (r < 3) { r = 3; }
+        var sp = dc.getTextWidthInPixels(" ", font);
+        var w1 = dc.getTextWidthInPixels(prefix, font);
+        var w2 = dc.getTextWidthInPixels(value, font);
+        var x = cx - (w1 + r * 2 + sp + w2) / 2;
+        var vl = Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER;
+
+        dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(x, y, font, prefix, vl);
+
+        // mesiac: biely kruh, z ktoreho cierny kruh vyreze kosacik
+        var mx = x + w1 + r;
+        dc.fillCircle(mx, y, r);
+        dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_TRANSPARENT);
+        dc.fillCircle(mx + r * 0.55, y - r * 0.35, r * 0.85);
+
+        dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(mx + r + sp, y, font, value, vl);
     }
 
     // Detail: skore kazdej zlozky (0-100) a jej hodnota.
