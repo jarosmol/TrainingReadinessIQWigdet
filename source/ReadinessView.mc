@@ -270,8 +270,11 @@ class ReadinessView extends WatchUi.View {
             var scText = "--";
             if (sc != null) {
                 scText = sc.format("%d");
-            } else if (rows[i][3] != null) {
-                scText = rows[i][3].format("%d") + "d";
+            } else {
+                var days = rows[i][3] as Number or Null;
+                if (days != null) {
+                    scText = days.format("%d") + "d";
+                }
             }
             dc.setColor(scoreColor(sc), Graphics.COLOR_TRANSPARENT);
             dc.drawText(xS, y, Graphics.FONT_XTINY, scText,
