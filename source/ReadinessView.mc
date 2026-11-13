@@ -41,7 +41,9 @@ class ReadinessView extends WatchUi.View {
     function refresh(force) {
         if (_fetcher.isBusy()) { return; }
         var age = Time.now().value() - _fetchedAt;
-        if (!force && _result != null && age < STALE_SECS) { return; }
+        // cache zo starsej verzie widgetu (bez historie) sa obnovi hned
+        var complete = part("hist") != null;
+        if (!force && _result != null && complete && age < STALE_SECS) { return; }
         _status = :loading;
         WatchUi.requestUpdate();
         _fetcher.start(method(:onData));
