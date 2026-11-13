@@ -10,9 +10,9 @@ class ReadinessDelegate extends WatchUi.BehaviorDelegate {
         _view = view;
     }
 
-    // Tlacidlo / klepnutie: prepne prehlad <-> detail zloziek a pripadne obnovi data.
+    // Tlacidlo / klepnutie: prehlad -> zlozky -> historia, pripadne obnovi data.
     function onSelect() {
-        _view.toggleDetail();
+        _view.nextPage();
         _view.refresh(false);
         return true;
     }

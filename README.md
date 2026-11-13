@@ -7,7 +7,7 @@ ale zo vsetkych aktivit (Edge 540 aj hodinky).
 Podporovane hodinky: **Vivoactive 4S, Venu 3S, Venu 3, Forerunner 255 Music / 255S Music**
 (dalsie sa daju pridat, vid nizsie).
 
-Na Forerunneri 255 sa widget ovlada tlacidlami: **START** prepne detail, **podrzanie UP** (menu) obnovi data.
+Na Forerunneri 255 sa widget ovlada tlacidlami: **START** prepina obrazovky, **podrzanie UP** (menu) obnovi data.
 
 ![nahlad](nahlad.png)
 
@@ -21,6 +21,12 @@ Na Forerunneri 255 sa widget ovlada tlacidlami: **START** prepne detail, **podrz
 | **HRV** | 30 % | nocna HRV z hodiniek | dnesna hodnota oproti vasmu priemeru za ~4 tyzdne (z-skore) |
 | **Spanok** | 20 % | hodinky | skore spanku; ak chyba, dlzka spanku (8 h = 100 b., 6 h = 65 b.) |
 | **Pokojovy tep** | 15 % | hodinky | vyssi ako vas priemer = horsie |
+| **Body Battery** | 20 % | priamo z hodiniek | **iba ak chyba HRV** (napr. Vivoactive 4S): ranne maximum Body Battery od polnoci, 85 = 90 b., 70 = 70 b., 50 = 40 b. |
+
+Body Battery sa nikdy nepouzije spolu s HRV, lebo Garmin ho z HRV pocita a islo by o dvojite
+zapocitanie. Pouziva sa ranne maximum (nie aktualna hodnota), aby skore cez den neklesalo.
+Pred 5:00 rano sa Body Battery nepouzije. Hodinky so starsim Connect IQ ho nemusia poskytovat,
+vtedy sa jednoducho vynecha.
 
 Ak niektora zlozka chyba, vahy sa automaticky prepocitaju. **Vivoactive 4S HRV nemeria**,
 takze skore sa pocita z formy, spanku a tepu. Po prechode na Venu 3S sa HRV zapocita samo,
@@ -31,7 +37,10 @@ Pasma: **80+ Vyborna**, 60–79 Dobra, 40–59 Priemerna, 25–39 Nizka, pod 25 
 Na priemer (baseline) HRV a tepu treba aspon 7 dni dat za posledne 4 tyzdne. Kym ich nie je dost, zlozka sa vynecha a v detaile sa namiesto skore ukaze pocet dni, napr. `3d`.
 
 ### Ovladanie
-- **Stlacenie / klepnutie** – prepne medzi prehladom a detailom zloziek (skore kazdej zlozky, dnes / priemer).
+- **Stlacenie / klepnutie** – prepina obrazovky: **prehlad → zlozky skore → historia 7 dni**.
+- **Historia** je spatne dopocitana z dat intervals.icu, takze je hned k dispozicii. Pri minulych dnoch
+  sa nepouziva nahrada z vcerajska ani Body Battery (hodinky jeho historiu neuchovavaju),
+  preto sa dnesny stlpec moze od vcerajsich trochu lisit sposobom vypoctu.
 - **Podrzanie (menu)** – vynutene obnovenie dat.
 - Data sa pri otvoreni widgetu obnovia automaticky, ak su starsie ako 30 minut.
 

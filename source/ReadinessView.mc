@@ -16,7 +16,7 @@ class ReadinessView extends WatchUi.View {
     var _fetchedAt = 0;             // Time.now().value() posledneho uspesneho stiahnutia
     var _status = :idle;            // :idle, :loading, :nokey, :error
     var _errorCode = 0;
-    var _detail = false;
+    var _page = 0;                  // 0 prehlad, 1 zlozky, 2 historia
 
     function initialize() {
         View.initialize();
@@ -32,8 +32,9 @@ class ReadinessView extends WatchUi.View {
         refresh(false);
     }
 
-    function toggleDetail() {
-        _detail = !_detail;
+    // Prehlad -> zlozky -> historia -> prehlad
+    function nextPage() {
+        _page = (_page + 1) % 3;
         WatchUi.requestUpdate();
     }
 
@@ -90,6 +91,14 @@ class ReadinessView extends WatchUi.View {
         if (secs == null) { return "--"; }
         var m = (secs / 60.0 + 0.5).toNumber();
         return (m / 60).format("%d") + ":" + (m % 60).format("%02d");
+    }
+
+    // Zlozka z vysledku, ak existuje (starsia cache nove kluce nema).
+    function part(key) {
+        if (_result instanceof Lang.Dictionary && _result.hasKey(key)) {
+            return _result[key];
+        }
+        return null;
     }
 
     // Pocet dni v baseline (4. prvok zlozky), ak je ulozeny; starsia cache ho nema.
@@ -155,8 +164,10 @@ class ReadinessView extends WatchUi.View {
             return;
         }
 
-        if (_detail) {
+        if (_page == 1) {
             drawDetail(dc, w, h, cx, cy);
+        } else if (_page == 2) {
+            drawHistory(dc, w, h, cx, cy);
         } else {
             drawMain(dc, w, h, cx, cy);
         }
@@ -219,7 +230,13 @@ class ReadinessView extends WatchUi.View {
         var gap = small ? "  " : "   ";
         var line1 = "Forma " + (form[1] == null ? "--" : signed(form[1]) + "%")
                   + gap + (small ? "Sp " : "Spanok ") + hhmm(sleep[1]);
-        var line2 = (hrv[1] == null ? "HRV --" : "HRV " + r(hrv[1]).format("%d"))
+        // Body Battery sa zobrazi namiesto HRV, ak sa pouzilo v skore
+        var bb = part("bb");
+        var hrvText = hrv[1] == null ? "HRV --" : "HRV " + r(hrv[1]).format("%d");
+        if (bb != null && bb[0] != null) {
+            hrvText = "BB " + r(bb[1]).format("%d");
+        }
+        var line2 = hrvText
                   + gap + "Tep " + (rhr[1] == null ? "--" : r(rhr[1]).format("%d"));
 
         dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
@@ -245,6 +262,7 @@ class ReadinessView extends WatchUi.View {
         var hrv = _result["hrv"];
         var sleep = _result["sleep"];
         var rhr = _result["rhr"];
+        var bb = part("bb");
 
         // 4. stlpec: pocet dni v priemere (HRV, tep) - ak ich je malo, namiesto
         // skore sa zobrazi napr. "3d" (zbiera sa baseline)
@@ -258,6 +276,11 @@ class ReadinessView extends WatchUi.View {
                 r(rhr[1]).format("%d") + (rhr[2] == null ? "" : "/" + r(rhr[2]).format("%d")),
                 rhr[1] == null ? null : baseDays(rhr)]
         ];
+
+        // Ak sa v skore pouzilo Body Battery (namiesto HRV), ukaz ho v riadku HRV
+        if (bb != null && bb[0] != null) {
+            rows[1] = ["BodyBat", bb[0], "max " + r(bb[1]).format("%d"), null];
+        }
 
         var xL = cx - w * 0.36;
         var xS = cx + w * 0.02;
@@ -286,5 +309,55 @@ class ReadinessView extends WatchUi.View {
         dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
         dc.drawText(cx, top + rowH * 5.6, Graphics.FONT_XTINY, "skore  |  dnes / priemer",
             Graphics.TEXT_JUSTIFY_CENTER | vc);
+    }
+
+    // Historia: skore za poslednych 7 dni ako stlpcovy graf (najnovsi vpravo).
+    function drawHistory(dc, w, h, cx, cy) {
+        var vcC = Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER;
+        var hist = part("hist");
+        var labels = part("histDays");
+
+        dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(cx, cy - h * 0.30, Graphics.FONT_XTINY, "POSLEDNYCH 7 DNI", vcC);
+
+        if (hist == null || labels == null) {
+            dc.drawText(cx, cy, Graphics.FONT_XTINY, "Obnovte data", vcC);
+            return;
+        }
+
+        var n = hist.size();
+        var areaW = w * 0.70;
+        var slot = areaW / n;
+        var barW = slot * 0.62;
+        var baseY = cy + h * 0.17;
+        var maxH = h * 0.32;
+        var left = cx - areaW / 2;
+        var fh = dc.getFontHeight(Graphics.FONT_XTINY);
+
+        for (var k = 0; k < n; k++) {
+            var idx = n - 1 - k;              // vlavo najstarsi den
+            var sc = r(hist[idx]);
+            var x = left + slot * k + slot / 2;
+
+            if (sc != null) {
+                var bh = maxH * sc / 100.0;
+                if (bh < 2) { bh = 2; }
+                dc.setColor(scoreColor(sc), Graphics.COLOR_TRANSPARENT);
+                dc.fillRectangle(x - barW / 2, baseY - bh, barW, bh);
+                dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
+                dc.drawText(x, baseY - bh - fh * 0.55, Graphics.FONT_XTINY, sc.format("%d"), vcC);
+            } else {
+                dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
+                dc.drawText(x, baseY - fh * 0.55, Graphics.FONT_XTINY, "-", vcC);
+            }
+
+            dc.setColor(idx == 0 ? Graphics.COLOR_WHITE : Graphics.COLOR_LT_GRAY,
+                Graphics.COLOR_TRANSPARENT);
+            dc.drawText(x, baseY + fh * 0.65, Graphics.FONT_XTINY, labels[idx], vcC);
+        }
+
+        dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
+        dc.drawLine(left, baseY, left + areaW, baseY);
+        dc.drawText(cx, baseY + fh * 1.75, Graphics.FONT_XTINY, "den v mesiaci", vcC);
     }
 }

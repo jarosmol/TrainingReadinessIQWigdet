@@ -8,6 +8,7 @@ import Toybox.Math;
 //   HRV     30 %  - nocna HRV vs. vlastny priemer za ~4 tyzdne (z-skore)
 //   Spanok  20 %  - skore spanku z hodiniek, inak dlzka spanku
 //   Pokojovy tep 15 % - vs. vlastny priemer (vyssi = horsie)
+//   Body Battery 20 % - ranne maximum, IBA ak chyba HRV (napr. Vivoactive 4S)
 // Ak niektora zlozka chyba (napr. Vivoactive 4S nema HRV), vahy sa prepocitaju
 // medzi dostupne zlozky.
 module ReadinessCalc {
@@ -16,6 +17,7 @@ module ReadinessCalc {
     const W_HRV = 0.30;
     const W_SLEEP = 0.20;
     const W_RHR = 0.15;
+    const W_BB = 0.20;    // Body Battery iba namiesto HRV (prekryva sa so spankom)
     const MIN_BASELINE = 7;   // minimalny pocet dni pre baseline HRV / tepu
 
     function clamp(x, lo, hi) {
@@ -116,9 +118,51 @@ module ReadinessCalc {
         return out;
     }
 
+    // Vazeny priemer dostupnych zloziek. parts: [[skore alebo null, vaha], ...],
+    // prvy prvok musi byt forma. Vrati [celkove skore alebo null, pocet zloziek].
+    function combine(parts) {
+        var sum = 0.0;
+        var wsum = 0.0;
+        var count = 0;
+        for (var i = 0; i < parts.size(); i++) {
+            if (parts[i][0] != null) {
+                sum += parts[i][0] * parts[i][1];
+                wsum += parts[i][1];
+                count++;
+            }
+        }
+        if (count >= 2 || (count == 1 && parts[0][0] != null)) {
+            return [sum / wsum, count];
+        }
+        return [null, count];
+    }
+
+    // Hodnoty zlozky idx z dni keys[start..] (starsie dni) - baseline pre historiu.
+    function baselineFrom(days, keys, start, idx) {
+        var out = [];
+        for (var j = start; j < keys.size(); j++) {
+            var v = field(days, keys[j], idx);
+            if (v != null) { out.add(v); }
+        }
+        return out;
+    }
+
+    // Body Battery (ranne maximum) -> skore. Pouziva sa iba ako nahrada HRV.
+    function bodyBatteryScore(peak) {
+        if (peak == null) { return null; }
+        return interp(peak,
+            [30.0, 50.0, 70.0, 85.0, 95.0],
+            [10.0, 40.0, 70.0, 90.0, 100.0]);
+    }
+
     // days: Dictionary "YYYY-MM-DD" -> [hrv, rhr, sleepSecs, sleepScore, ctl, atl] (Float alebo null)
+    // keys: datumy od dnes (keys[0]) dozadu.
+    // bbPeak: ranne maximum Body Battery z hodiniek (alebo null).
     // Vrati Dictionary s celkovym skore a zlozkami (vhodne na ulozenie do Storage).
-    function compute(days, today, yest) {
+    function compute(days, keys, bbPeak) {
+        var today = keys[0];
+        var yest = keys[1];
+
         // Forma
         var fDay = pickDay(days, today, yest, 4);
         var ctl = field(days, fDay, 4);
@@ -134,6 +178,11 @@ module ReadinessCalc {
         var hScore = hrvScore(hVal, hBase);
         var hMean = (hBase.size() > 0) ? meanSd(hBase)[0] : null;
 
+        // Body Battery - iba ak HRV skore chyba (hodinky HRV nemeraju alebo este
+        // nie je dost dni). Body Battery sa pocita aj z HRV, preto nikdy oboje naraz.
+        var bScore = null;
+        if (hScore == null) { bScore = bodyBatteryScore(bbPeak); }
+
         // Pokojovy tep
         var rDay = pickDay(days, today, yest, 1);
         var rVal = field(days, rDay, 1);
@@ -148,30 +197,41 @@ module ReadinessCalc {
         var sSc = field(days, sDay, 3);
         var sScore = sleepScoreFrom(sSc, sSecs);
 
-        // Vazeny priemer dostupnych zloziek
-        var parts = [[fScore, W_FORM], [hScore, W_HRV], [sScore, W_SLEEP], [rScore, W_RHR]];
-        var sum = 0.0;
-        var wsum = 0.0;
-        var count = 0;
-        for (var i = 0; i < parts.size(); i++) {
-            if (parts[i][0] != null) {
-                sum += parts[i][0] * parts[i][1];
-                wsum += parts[i][1];
-                count++;
-            }
-        }
-        var total = null;
-        if (count >= 2 || (count == 1 && fScore != null)) {
-            total = sum / wsum;
-        }
+        var c = combine([[fScore, W_FORM], [hScore, W_HRV], [bScore, W_BB],
+                         [sScore, W_SLEEP], [rScore, W_RHR]]);
 
         return {
-            "score" => total,
-            "n" => count,
+            "score" => c[0],
+            "n" => c[1],
             "form" => [fScore, fPct],
             "hrv" => [hScore, hVal, hMean, hBase.size()],
+            "bb" => [bScore, bbPeak],
             "sleep" => [sScore, sSecs, sSc],
             "rhr" => [rScore, rVal, rMean, rBase.size()]
         };
+    }
+
+    // Skore za den keys[i] iba z dat toho dna, baseline zo starsich dni.
+    // Body Battery historia nie je dostupna, preto sa v historii nepouziva.
+    function dayScore(days, keys, i) {
+        var d = keys[i];
+        var ctl = field(days, d, 4);
+        var atl = field(days, d, 5);
+        var fScore = formScore(ctl, atl);
+        var hScore = hrvScore(field(days, d, 0), baselineFrom(days, keys, i + 1, 0));
+        var rScore = rhrScore(field(days, d, 1), baselineFrom(days, keys, i + 1, 1));
+        var sScore = sleepScoreFrom(field(days, d, 3), field(days, d, 2));
+        return combine([[fScore, W_FORM], [hScore, W_HRV],
+                        [sScore, W_SLEEP], [rScore, W_RHR]])[0];
+    }
+
+    // Skore za poslednych n dni: index 0 = dnes. Dnesok doplni volajuci
+    // hlavnym skore (s nahradnymi hodnotami z vcera a Body Battery).
+    function history(days, keys, n) {
+        var out = [];
+        for (var i = 0; i < n; i++) {
+            out.add(dayScore(days, keys, i));
+        }
+        return out;
     }
 }

@@ -2,6 +2,7 @@ import Toybox.Application;
 import Toybox.Communications;
 import Toybox.Lang;
 import Toybox.PersistedContent;
+import Toybox.SensorHistory;
 import Toybox.StringUtil;
 import Toybox.Time;
 import Toybox.Time.Gregorian;
@@ -16,6 +17,31 @@ class DataFetcher {
     var _callback = null;   // Method(status as Symbol, payload)
     var _chunk = 0;
     var _days = null;
+
+    const HISTORY_DAYS = 7;
+    const BB_EARLIEST = 5 * 3600;   // pred 5:00 este nie je ranne maximum Body Battery
+
+    // Ranne maximum Body Battery (od polnoci) z historie senzorov hodiniek.
+    // Hodinky bez tejto funkcie (alebo so starsim Connect IQ) vratia null.
+    static function readBodyBatteryPeak() {
+        if (!(Toybox has :SensorHistory)) { return null; }
+        if (!(Toybox.SensorHistory has :getBodyBatteryHistory)) { return null; }
+        var secs = Time.now().value() - Time.today().value();
+        if (secs < BB_EARLIEST) { return null; }
+        var it = Toybox.SensorHistory.getBodyBatteryHistory({
+            :period => new Time.Duration(secs)
+        });
+        if (it == null) { return null; }
+        var peak = null;
+        var sample = it.next();
+        while (sample != null) {
+            var v = sample.data;
+            if (v != null && (peak == null || v > peak)) { peak = v; }
+            sample = it.next();
+        }
+        if (peak == null) { return null; }
+        return peak.toFloat();
+    }
     var _busy = false;
 
     function initialize() {
@@ -112,7 +138,20 @@ class DataFetcher {
             requestChunk();
             return;
         }
-        var result = ReadinessCalc.compute(_days, dateStr(0), dateStr(1));
+        var keys = [];
+        for (var k = 0; k < CHUNKS * CHUNK_DAYS; k++) {
+            keys.add(dateStr(k));
+        }
+        var result = ReadinessCalc.compute(_days, keys, readBodyBatteryPeak());
+        var hist = ReadinessCalc.history(_days, keys, HISTORY_DAYS);
+        hist[0] = result["score"];
+        var labels = [];
+        for (var k = 0; k < HISTORY_DAYS; k++) {
+            var t = Time.now().subtract(new Time.Duration(k * 86400));
+            labels.add(Gregorian.info(t, Time.FORMAT_SHORT).day.format("%d"));
+        }
+        result.put("hist", hist);
+        result.put("histDays", labels);
         _days = null;
         finish(:ok, result);
     }
