@@ -96,10 +96,15 @@ class DataFetcher {
             return;
         }
         var body = data as Object or Null;
-        if (body instanceof Lang.Array) {
-            data = null;
-            parseRecords(body);
+        // Ocakavame JSON pole (aj prazdne). Cokolvek ine znamena neuplne data -
+        // radsej chyba, nez skore vypocitane z ciastocneho priemeru.
+        if (!(body instanceof Lang.Array)) {
+            _days = null;
+            finish(:error, -400);
+            return;
         }
+        data = null;
+        parseRecords(body);
         body = null;
 
         _chunk++;
