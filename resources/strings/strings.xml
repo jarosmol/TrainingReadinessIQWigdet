@@ -32,6 +32,7 @@
     <string id="Load2">Loading</string>
     <string id="Load3">data...</string>
     <string id="Form">Fresh</string>
+    <string id="FormLong">Freshness</string>
     <string id="Sleep">Sleep</string>
     <string id="SleepShort">Sleep</string>
     <string id="Rhr">RestHR</string>

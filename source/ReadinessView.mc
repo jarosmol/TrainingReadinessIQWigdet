@@ -51,6 +51,7 @@ class ReadinessView extends WatchUi.View {
             "Load2" => WatchUi.loadResource(Rez.Strings.Load2),
             "Load3" => WatchUi.loadResource(Rez.Strings.Load3),
             "Form" => WatchUi.loadResource(Rez.Strings.Form),
+            "FormLong" => WatchUi.loadResource(Rez.Strings.FormLong),
             "Sleep" => WatchUi.loadResource(Rez.Strings.Sleep),
             "SleepShort" => WatchUi.loadResource(Rez.Strings.SleepShort),
             "Rhr" => WatchUi.loadResource(Rez.Strings.Rhr),
@@ -337,6 +338,13 @@ class ReadinessView extends WatchUi.View {
         var xL = cx - w * 0.36;
         var xS = cx + w * 0.02;
         var xV = cx + w * 0.36;
+
+        // Plny nazov (Freshness), ak sa zmesti pred stlpec so skore, inak skratka (Fresh)
+        var longLabel = tx("FormLong");
+        var room = xS - xL - dc.getTextWidthInPixels("100", Graphics.FONT_XTINY) / 2 - 4;
+        if (dc.getTextWidthInPixels(longLabel, Graphics.FONT_XTINY) <= room) {
+            rows[0][0] = longLabel;
+        }
         for (var i = 0; i < rows.size(); i++) {
             var y = top + rowH * (i + 1.2);
             var sc = r(rows[i][1]);
