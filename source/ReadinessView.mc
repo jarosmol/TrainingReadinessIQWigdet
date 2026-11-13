@@ -207,8 +207,9 @@ class ReadinessView extends WatchUi.View {
         var hrv = _result["hrv"];
         var rhr = _result["rhr"];
 
-        // na malych displejoch (Vivoactive 4S, 218 px) kratsie popisky a medzery
-        var small = w < 260;
+        // na mensich displejoch (Vivoactive 4S 218 px, Forerunner 255 260 px)
+        // kratsie popisky a medzery
+        var small = w < 300;
         var gap = small ? "  " : "   ";
         var line1 = "Forma " + (form[1] == null ? "--" : signed(form[1]) + "%")
                   + gap + (small ? "Sp " : "Spanok ") + hhmm(sleep[1]);

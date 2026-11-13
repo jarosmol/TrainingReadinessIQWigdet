@@ -4,7 +4,10 @@ Widget pre Garmin hodinky, ktory si z **intervals.icu** stiahne vase denne welln
 a vypocita jedno ranne **skore pripravenosti 0–100** – podobne ako Garmin Training Readiness,
 ale zo vsetkych aktivit (Edge 540 aj hodinky).
 
-Podporovane hodinky: **Vivoactive 4S, Venu 3S, Venu 3** (dalsie sa daju pridat, vid nizsie).
+Podporovane hodinky: **Vivoactive 4S, Venu 3S, Venu 3, Forerunner 255 Music / 255S Music**
+(dalsie sa daju pridat, vid nizsie).
+
+Na Forerunneri 255 sa widget ovlada tlacidlami: **START** prepne detail, **podrzanie UP** (menu) obnovi data.
 
 ![nahlad](nahlad.png)
 
