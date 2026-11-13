@@ -284,7 +284,7 @@ class ReadinessView extends WatchUi.View {
         }
 
         dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(cx, top + rowH * 5.6, Graphics.FONT_XTINY, "dnes / priemer",
+        dc.drawText(cx, top + rowH * 5.6, Graphics.FONT_XTINY, "skore  |  dnes / priemer",
             Graphics.TEXT_JUSTIFY_CENTER | vc);
     }
 }
