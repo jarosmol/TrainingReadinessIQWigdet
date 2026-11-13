@@ -44,12 +44,16 @@ check *Settings → Connections → Garmin* in intervals.icu.
 
 | Factor | Weight | Source | Scoring |
 |---|---|---|---|
-| **Form** | 35 % | intervals.icu (fitness − fatigue, all activities) | form as % of fitness: +10 % or more = 95, 0 % = 80, −20 % = 50, −40 % = 15 |
+| **Freshness** (*Fresh*) | 35 % | intervals.icu form = fitness − fatigue, all activities | as % of fitness: +10 % or more = 95, 0 % = 80, −20 % = 50, −40 % = 15 |
 | **HRV** | 30 % | overnight HRV from the watch | today vs. your own ~4-week baseline (z-score) |
 | **Sleep** | 20 % | watch | sleep score; if missing, sleep duration (8 h = 100, 6 h = 65) |
 | **Resting HR** | 15 % | watch | higher than your baseline = worse |
 | **Body Battery** | 20 % | read on the watch | **only when HRV is missing** (e.g. vivoactive 4S): morning peak since midnight, 85 = 90, 70 = 70, 50 = 40 |
 
+- **Freshness** is what intervals.icu calls *Form*: fitness (~6-week training load) minus fatigue (~7-day load),
+  shown as % of fitness. **Positive = rested, negative = tired from recent training.** −23 % means fatigue is
+  23 % above your fitness – typical for a productive training block (intervals.icu calls −10 to −30 % *optimal*),
+  but it lowers today's readiness for another hard session.
 - Body Battery is **never combined with HRV** – Garmin derives it partly from HRV, so using both would count recovery twice.
   The morning peak is used (not the current value), so the score does not drop during the day. Between midnight and 5:00 the last known morning peak (yesterday's) is used.
 - Missing factors are skipped and the weights are re-normalised.

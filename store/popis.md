@@ -19,11 +19,11 @@ Morning training readiness score from your intervals.icu data – rides from you
 Readiness turns your intervals.icu wellness data into one morning score from 0 to 100.
 
 Unlike readiness scores calculated only from your watch, it uses fitness and fatigue
-(form) that intervals.icu calculates from ALL your activities – including rides recorded
+(form / freshness) that intervals.icu calculates from ALL your activities – including rides recorded
 on a Garmin Edge with a power meter. Ideal if most of your training is not recorded on your watch.
 
 Score factors:
-- Form (35 %) – fitness minus fatigue from intervals.icu
+- Freshness (35 %) – fitness minus fatigue ("form") from intervals.icu; negative = tired from recent training
 - HRV (30 %) – last night's HRV compared with your own 4-week baseline
 - Body Battery (20 %) – morning peak, used ONLY on watches without HRV (never together with HRV)
 - Sleep (20 %) – sleep score or sleep duration
@@ -44,7 +44,7 @@ Pripravenost premeni wellness data z intervals.icu na jedno ranne skore 0–100.
 Na rozdiel od skore pocitaneho len z hodiniek pouziva formu (fitness minus unava), ktoru
 intervals.icu pocita zo VSETKYCH aktivit – aj z jazd zaznamenanych na Garmin Edge s wattmetrom.
 
-Zlozky: forma 35 %, HRV 30 %, Body Battery 20 % (iba na hodinkach bez HRV), spanok 20 %,
+Zlozky: sviezost (forma z intervals.icu, zaporna = unava z treningu) 35 %, HRV 30 %, Body Battery 20 % (iba na hodinkach bez HRV), spanok 20 %,
 pokojovy tep 15 %. Obrazovky: prehlad → zlozky → historia 7 dni.
 
 Nastavenie: na intervals.icu v Settings → Developer Settings vygenerujte API kluc a vlozte

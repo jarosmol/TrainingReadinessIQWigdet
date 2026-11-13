@@ -20,11 +20,16 @@ Na Forerunneri 255 sa widget ovlada tlacidlami: **START** prepina obrazovky, **p
 
 | Zlozka | Vaha | Odkial | Ako sa hodnoti |
 |---|---|---|---|
-| **Forma** | 35 % | intervals.icu (fitness – unava, zo vsetkych aktivit) | forma v % z fitness: +10 % a viac = 95 b., 0 % = 80 b., −20 % = 50 b., −40 % = 15 b. |
+| **Sviezost** | 35 % | forma z intervals.icu (fitness – unava, zo vsetkych aktivit) | v % z fitness: +10 % a viac = 95 b., 0 % = 80 b., −20 % = 50 b., −40 % = 15 b. |
 | **HRV** | 30 % | nocna HRV z hodiniek | dnesna hodnota oproti vasmu priemeru za ~4 tyzdne (z-skore) |
 | **Spanok** | 20 % | hodinky | skore spanku; ak chyba, dlzka spanku (8 h = 100 b., 6 h = 65 b.) |
 | **Pokojovy tep** | 15 % | hodinky | vyssi ako vas priemer = horsie |
 | **Body Battery** | 20 % | priamo z hodiniek | **iba ak chyba HRV** (napr. Vivoactive 4S): ranne maximum Body Battery od polnoci, 85 = 90 b., 70 = 70 b., 50 = 40 b. |
+
+**Sviezost** je to, co intervals.icu nazyva *Form*: fitness (zataz za ~6 tyzdnov) minus unava (zataz za ~7 dni),
+v % z fitness. **Kladna = oddychnuty, zaporna = unaveny z posledneho treningu.** −23 % znamena, ze unava je
+o 23 % vyssia ako vasa dlhodoba kondicia – typicke pre produktivny treningovy blok (intervals.icu povazuje
+−10 az −30 % za *optimalne*), ale dnesnu pripravenost na dalsi tvrdy trening to znizuje.
 
 Body Battery sa nikdy nepouzije spolu s HRV, lebo Garmin ho z HRV pocita a islo by o dvojite
 zapocitanie. Pouziva sa ranne maximum (nie aktualna hodnota), aby skore cez den neklesalo.
