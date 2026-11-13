@@ -1,6 +1,16 @@
 <?xml version="1.0"?>
 <iq:manifest version="3" xmlns:iq="http://www.garmin.com/xml/connectiq">
-    <!-- Widget "Pripravenost": skore pripravenosti z dat intervals.icu -->
+    <!--
+        Widget "Readiness / Pripravenost": skore pripravenosti z dat intervals.icu
+
+        ID aplikacie:
+          verejna verzia (tento subor) : 2de113d694ab4575bc0cadee4c950ea9
+          beta verzia                  : fd723a7f78794bdaa61d618167a331e6
+        Beta manifest NEUPRAVUJTE rucne - vytvori ho scripts/export.ps1 z tohto suboru
+        (zmeni iba ID a nazov). Zoznam hodiniek sa meni len tu.
+
+        Iba hodinky s okruhlym displejom (rozlozenie je navrhnute na kruh).
+    -->
     <iq:application id="2de113d694ab4575bc0cadee4c950ea9"
                     type="widget"
                     name="@Strings.AppName"
@@ -8,11 +18,28 @@
                     launcherIcon="@Drawables.LauncherIcon"
                     minApiLevel="3.1.0">
         <iq:products>
+            <iq:product id="vivoactive4"/>
             <iq:product id="vivoactive4s"/>
-            <iq:product id="venu3s"/>
+            <iq:product id="vivoactive5"/>
+            <iq:product id="venu2"/>
+            <iq:product id="venu2s"/>
+            <iq:product id="venu2plus"/>
             <iq:product id="venu3"/>
+            <iq:product id="venu3s"/>
+            <iq:product id="fr165"/>
+            <iq:product id="fr165m"/>
+            <iq:product id="fr255"/>
+            <iq:product id="fr255s"/>
             <iq:product id="fr255m"/>
             <iq:product id="fr255sm"/>
+            <iq:product id="fr265"/>
+            <iq:product id="fr265s"/>
+            <iq:product id="fr955"/>
+            <iq:product id="fr965"/>
+            <iq:product id="fenix7"/>
+            <iq:product id="fenix7s"/>
+            <iq:product id="fenix7x"/>
+            <iq:product id="epix2"/>
         </iq:products>
         <iq:permissions>
             <iq:uses-permission id="Communications"/>

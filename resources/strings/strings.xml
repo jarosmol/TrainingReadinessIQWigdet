@@ -1,6 +1,7 @@
 <!-- Anglictina (predvolena). $1$ = cislo doplnene v kode. -->
 <strings>
     <string id="AppName">Readiness</string>
+    <string id="AppNameBeta">Readiness BETA</string>
     <string id="AthleteIdTitle">intervals.icu athlete ID (0 = my account)</string>
     <string id="ApiKeyTitle">intervals.icu API key</string>
     <string id="Title">READINESS</string>

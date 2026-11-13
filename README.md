@@ -4,8 +4,9 @@ Widget pre Garmin hodinky, ktory si z **intervals.icu** stiahne vase denne welln
 a vypocita jedno ranne **skore pripravenosti 0–100** – podobne ako Garmin Training Readiness,
 ale zo vsetkych aktivit (Edge 540 aj hodinky).
 
-Podporovane hodinky: **Vivoactive 4S, Venu 3S, Venu 3, Forerunner 255 Music / 255S Music**
-(dalsie sa daju pridat, vid nizsie).
+Podporovane hodinky (iba okruhle displeje): **vivoactive 4/4S/5, Venu 2/2S/2 Plus/3/3S,
+Forerunner 165/255/265/955/965 (vratane S a Music), fenix 7/7S/7X, epix 2** – zoznam je v `manifest.xml`.
+Odskusane: vivoactive 4S (hodinky aj simulator), Forerunner 255 Music (simulator).
 
 Na Forerunneri 255 sa widget ovlada tlacidlami: **START** prepina obrazovky, **podrzanie UP** (menu) obnovi data.
 
@@ -86,37 +87,60 @@ a hodinky musia byt s telefonom spojene.
 
 ---
 
-## Instalacia cez Connect IQ obchod (beta)
+## Connect IQ obchod: verejna verzia a beta
 
-Beta verziu vidite a instalujete iba vy, Garmin ju neschvaluje. Instaluje sa cez aplikaciu
-Connect IQ v telefone a **API kluc sa zadava v aplikacii Garmin Connect**, nie v subore.
+Projekt vytvara **dve samostatne aplikacie** s roznym ID:
 
-### 1. Pred exportom: kluc von zo suboru
-V `resources/properties/properties.xml` vratte `SEM_VLOZTE_API_KLUC` (alebo skopirujte
-`properties.example.xml` znova). Hodnoty z tohto suboru sa stavaju predvolenymi nastaveniami
-aplikacie v obchode. Na testovanie v simulatore zadajte kluc cez
-**File → Edit Persistent Storage → Edit Application.Properties data**.
+| | Verejna | Beta |
+|---|---|---|
+| Subor | `export/Readiness.iq` | `export/Readiness-beta.iq` |
+| ID aplikacie | `2de113d6...` (manifest.xml) | `fd723a7f...` (vytvori skript) |
+| Nazov na hodinkach | Readiness / Pripravenost | Readiness BETA / Pripravenost BETA |
+| Kto ju vidi | vsetci (po schvaleni Garminom) | iba vy, bez schvalovania |
+| Na co | pre ostatnych pouzivatelov | testovanie novej verzie pred zverejnenim |
 
-### 2. Export
-1. V SDK Manageri (Devices) stiahnite **vsetky** hodinky z manifestu: vivoactive 4S, Venu 3, Venu 3S,
-   Forerunner 255 Music, Forerunner 255S Music. Alebo nepotrebne odstrante cez **Monkey C: Edit Products**.
-2. `Ctrl+Shift+P` → **Monkey C: Export Project** → vznikne subor `.iq` (jeden pre vsetky hodinky).
+V oboch sa **API kluc zadava v aplikacii Garmin Connect** (nastavenia widgetu), nie v subore.
 
-### 3. Nahratie
-1. Na **apps.garmin.com/developer** sa prihlaste (Garmin ucet; pri prvom prihlaseni prijmite
+### 1. Priprava (raz)
+1. V **SDK Manageri → Devices** stiahnite vsetky hodinky z `manifest.xml` (vivoactive 4/4S/5,
+   Venu 2/2S/2 Plus/3/3S, Forerunner 165/255/265/955/965 vratane verzii S a Music, fenix 7/7S/7X, epix 2).
+   Ak niektore nechcete, odstrante ich cez **Monkey C: Edit Products**.
+2. Developer key ma byt v `Dokumenty\garmin\developer_key` (inak ho skriptu zadajte cez `-DeveloperKey`).
+3. V `resources/properties/properties.xml` musi byt `SEM_VLOZTE_API_KLUC` – skript to skontroluje
+   a ak tam najde skutocny kluc, export zastavi. Hodnoty z tohto suboru sa v obchode stavaju
+   predvolenymi nastaveniami pre kazdeho.
+4. Na testovanie v simulatore zadajte kluc cez
+   **File → Edit Persistent Storage → Edit Application.Properties data** (nie do suboru).
+
+### 2. Export (vo VS Code terminali)
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\export.ps1              # obe verzie
+powershell -ExecutionPolicy Bypass -File scripts\export.ps1 -Only beta   # len beta
+powershell -ExecutionPolicy Bypass -File scripts\export.ps1 -Only public # len verejna
+```
+Subory `.iq` vzniknu v priecinku `export/` (je v `.gitignore`).
+
+### 3. Nahratie do obchodu
+1. Prihlaste sa na **apps.garmin.com/developer** (Garmin ucet; pri prvom prihlaseni prijmite
    podmienky pre vyvojarov).
-2. **Upload an App** → vyberte subor `.iq` → zaskrtnite **Beta App**.
-3. Vyplnte nazov, popis a ikonu – vsetko je pripravene v priecinku `store/` (`popis.md`, `ikona_500.png`, snimky).
-4. Odoslite. Beta je dostupna hned.
+2. **Beta:** Upload an App → `Readiness-beta.iq` → zaskrtnite **Beta App**. Dostupna hned.
+3. **Verejna:** Upload an App → `Readiness.iq` → **bez** zaskrtnutia Beta. Garmin ju skontroluje
+   (zvycajne niekolko dni) a potom ju najde kazdy v obchode.
+4. Vo formulari pouzite podklady z priecinka `store/`: nazov, kratky a dlhy popis (EN/SK),
+   text o ochrane udajov (`popis.md`), ikonu `ikona_500.png` a snimky obrazovky.
+   Kategoria: **Health & Fitness**. Verziu zacnite `1.0.0`.
 
 ### 4. Instalacia a nastavenie
-1. V telefone otvorte **Connect IQ** → **Moje aplikacie** (alebo vyhladajte nazov) → nainstalujte.
-2. V aplikacii **Garmin Connect** → zariadenie → **Aplikacie Connect IQ** → widget → **Nastavenia**.
+1. V telefone: **Connect IQ** → vyhladajte aplikaciu (beta je v **Moje aplikacie**) → nainstalujte.
+2. **Garmin Connect** → zariadenie → **Aplikacie Connect IQ** → widget → **Nastavenia**.
 3. Vlozte **API kluc**, **ID atleta** nechajte `0`. Widget si po ulozeni stiahne data.
 
-Ak mate widget nahraty aj cez USB, najprv ho z hodiniek zmazte (GARMIN/APPS), aby ste nemali dve kopie.
+Ak mate widget nahraty aj cez USB, najprv ho z hodiniek zmazte (GARMIN/APPS).
 
-Nova verzia: zvyste cislo verzie pri nahravani v obchode a nahrajte novy `.iq` k tej istej aplikacii.
+### Nova verzia
+1. Upravy vyskusajte v simulatore.
+2. `export.ps1 -Only beta` → nahrajte k **beta** aplikacii (Upload new version) → vyskusajte na hodinkach.
+3. `export.ps1 -Only public` → nahrajte k **verejnej** aplikacii s vyssim cislom verzie (napr. 1.0.1).
 
 ---
 
@@ -156,6 +180,8 @@ resources/strings/              anglicke texty (predvolene)
 resources-slo/strings/          slovenske texty
 resources-vivoactive4s/         ikona 30x30 pre Vivoactive 4S
 store/                          podklady do Connect IQ obchodu (popis, ikona, snimky)
+beta.jungle                     zostavenie beta verzie (manifest-beta.xml vytvori skript)
+scripts/export.ps1              export verejnej a beta verzie (.iq) s kontrolou API kluca
 source/ReadinessApp.mc          vstupny bod aplikacie
 source/ReadinessView.mc         kreslenie obrazovky, cache, chybove hlasenia
 source/ReadinessDelegate.mc     ovladanie (tlacidla / dotyk)

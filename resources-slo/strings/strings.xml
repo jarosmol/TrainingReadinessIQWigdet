@@ -1,6 +1,7 @@
 <!-- Slovencina - pouzije sa na hodinkach nastavenych na slovencinu. Bez diakritiky. -->
 <strings>
     <string id="AppName">Pripravenost</string>
+    <string id="AppNameBeta">Pripravenost BETA</string>
     <string id="AthleteIdTitle">intervals.icu ID atleta (0 = moj ucet)</string>
     <string id="ApiKeyTitle">intervals.icu API kluc</string>
     <string id="Title">PRIPRAVENOST</string>

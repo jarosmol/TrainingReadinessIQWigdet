@@ -15,3 +15,7 @@ bin/
 .vscode/
 .DS_Store
 Thumbs.db
+
+# Export do Connect IQ obchodu (scripts/export.ps1)
+export/
+manifest-beta.xml
