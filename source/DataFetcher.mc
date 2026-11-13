@@ -19,7 +19,6 @@ class DataFetcher {
     var _days = null;
 
     const HISTORY_DAYS = 7;
-    const BB_EARLIEST = 5 * 3600;   // pred 5:00 este nie je ranne maximum Body Battery
 
     // Ranne maximum Body Battery (od polnoci) z historie senzorov hodiniek.
     // Hodinky bez tejto funkcie (alebo so starsim Connect IQ) vratia null.
@@ -27,7 +26,9 @@ class DataFetcher {
         if (!(Toybox has :SensorHistory)) { return null; }
         if (!(Toybox.SensorHistory has :getBodyBatteryHistory)) { return null; }
         var secs = Time.now().value() - Time.today().value();
-        if (secs < BB_EARLIEST) { return null; }
+        // pred 5:00 este nie je ranne maximum Body Battery
+        // (staticka funkcia nevidi konstanty triedy, preto priamo hodnota)
+        if (secs < 5 * 3600) { return null; }
         var it = Toybox.SensorHistory.getBodyBatteryHistory({
             :period => new Time.Duration(secs)
         });
