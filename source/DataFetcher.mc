@@ -22,13 +22,26 @@ class DataFetcher {
 
     // Ranne maximum Body Battery (od polnoci) z historie senzorov hodiniek.
     // Hodinky bez tejto funkcie (alebo so starsim Connect IQ) vratia null.
+    // Medzi polnocou a 5:00 este nove ranne maximum neexistuje - vtedy sa pouzije
+    // posledne zname (zo vcera), ktore si widget uklada.
     static function readBodyBatteryPeak() {
         if (!(Toybox has :SensorHistory)) { return null; }
         if (!(Toybox.SensorHistory has :getBodyBatteryHistory)) { return null; }
+        var today = DataFetcher.dateStr(0);
         var secs = Time.now().value() - Time.today().value();
-        // pred 5:00 este nie je ranne maximum Body Battery
         // (staticka funkcia nevidi konstanty triedy, preto priamo hodnota)
-        if (secs < 5 * 3600) { return null; }
+        if (secs < 5 * 3600) {
+            var stored = Application.Storage.getValue("bbPeak");
+            if (stored instanceof Lang.Dictionary) {
+                var d = stored["d"] as String or Null;
+                var v = stored["v"] as Float or Null;
+                if (d != null && v != null &&
+                    (d.equals(today) || d.equals(DataFetcher.dateStr(1)))) {
+                    return v;
+                }
+            }
+            return null;
+        }
         var it = Toybox.SensorHistory.getBodyBatteryHistory({
             :period => new Time.Duration(secs)
         });
@@ -36,13 +49,16 @@ class DataFetcher {
         var peak = null;
         var sample = it.next();
         while (sample != null) {
-            var v = sample.data;
-            if (v != null && (peak == null || v > peak)) { peak = v; }
+            var val = sample.data;
+            if (val != null && (peak == null || val > peak)) { peak = val; }
             sample = it.next();
         }
         if (peak == null) { return null; }
-        return peak.toFloat();
+        var p = peak.toFloat();
+        Application.Storage.setValue("bbPeak", { "d" => today, "v" => p });
+        return p;
     }
+
     var _busy = false;
 
     function initialize() {

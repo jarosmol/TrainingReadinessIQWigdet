@@ -28,7 +28,7 @@ Na Forerunneri 255 sa widget ovlada tlacidlami: **START** prepina obrazovky, **p
 
 Body Battery sa nikdy nepouzije spolu s HRV, lebo Garmin ho z HRV pocita a islo by o dvojite
 zapocitanie. Pouziva sa ranne maximum (nie aktualna hodnota), aby skore cez den neklesalo.
-Pred 5:00 rano sa Body Battery nepouzije. Hodinky so starsim Connect IQ ho nemusia poskytovat,
+Medzi polnocou a 5:00 sa pouzije posledne zname ranne maximum (vcerajsie). Hodinky so starsim Connect IQ ho nemusia poskytovat,
 vtedy sa jednoducho vynecha.
 
 Ak niektora zlozka chyba, vahy sa automaticky prepocitaju. **Vivoactive 4S HRV nemeria**,

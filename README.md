@@ -51,7 +51,7 @@ check *Settings → Connections → Garmin* in intervals.icu.
 | **Body Battery** | 20 % | read on the watch | **only when HRV is missing** (e.g. vivoactive 4S): morning peak since midnight, 85 = 90, 70 = 70, 50 = 40 |
 
 - Body Battery is **never combined with HRV** – Garmin derives it partly from HRV, so using both would count recovery twice.
-  The morning peak is used (not the current value), so the score does not drop during the day. It is not used before 5:00.
+  The morning peak is used (not the current value), so the score does not drop during the day. Between midnight and 5:00 the last known morning peak (yesterday's) is used.
 - Missing factors are skipped and the weights are re-normalised.
 - HRV and resting HR need at least **7 days** of data in the last 4 weeks. Until then the factor is skipped and the
   detail screen shows the number of days collected (e.g. `3d`).
