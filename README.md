@@ -28,7 +28,7 @@ netreba nic menit.
 
 Pasma: **80+ Vyborna**, 60–79 Dobra, 40–59 Priemerna, 25–39 Nizka, pod 25 Velmi nizka.
 
-Na baseline HRV a tepu treba aspon 7 dni dat, inak sa tieto zlozky vynechaju.
+Na priemer (baseline) HRV a tepu treba aspon 5 dni dat za posledne 4 tyzdne. Kym ich nie je dost, zlozka sa vynecha a v detaile sa namiesto skore ukaze pocet dni, napr. `3d`.
 
 ### Ovladanie
 - **Stlacenie / klepnutie** – prepne medzi prehladom a detailom zloziek (skore kazdej zlozky, dnes / priemer).

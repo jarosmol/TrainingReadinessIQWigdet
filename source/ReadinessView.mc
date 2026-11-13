@@ -92,6 +92,12 @@ class ReadinessView extends WatchUi.View {
         return (m / 60).format("%d") + ":" + (m % 60).format("%02d");
     }
 
+    // Pocet dni v baseline (4. prvok zlozky), ak je ulozeny; starsia cache ho nema.
+    static function baseDays(part) {
+        if (part.size() > 3) { return part[3]; }
+        return null;
+    }
+
     static function signed(x) {
         var n = r(x);
         return (n > 0 ? "+" : "") + n.format("%d");
@@ -240,13 +246,17 @@ class ReadinessView extends WatchUi.View {
         var sleep = _result["sleep"];
         var rhr = _result["rhr"];
 
+        // 4. stlpec: pocet dni v priemere (HRV, tep) - ak ich je malo, namiesto
+        // skore sa zobrazi napr. "3d" (zbiera sa baseline)
         var rows = [
-            ["Forma", form[0], form[1] == null ? "" : signed(form[1]) + "%"],
+            ["Forma", form[0], form[1] == null ? "" : signed(form[1]) + "%", null],
             ["HRV", hrv[0], hrv[1] == null ? "nemeria" :
-                r(hrv[1]).format("%d") + (hrv[2] == null ? "" : "/" + r(hrv[2]).format("%d"))],
-            ["Spanok", sleep[0], hhmm(sleep[1])],
+                r(hrv[1]).format("%d") + (hrv[2] == null ? "" : "/" + r(hrv[2]).format("%d")),
+                hrv[1] == null ? null : baseDays(hrv)],
+            ["Spanok", sleep[0], hhmm(sleep[1]), null],
             ["Tep", rhr[0], rhr[1] == null ? "" :
-                r(rhr[1]).format("%d") + (rhr[2] == null ? "" : "/" + r(rhr[2]).format("%d"))]
+                r(rhr[1]).format("%d") + (rhr[2] == null ? "" : "/" + r(rhr[2]).format("%d")),
+                rhr[1] == null ? null : baseDays(rhr)]
         ];
 
         var xL = cx - w * 0.36;
@@ -257,8 +267,14 @@ class ReadinessView extends WatchUi.View {
             var sc = r(rows[i][1]);
             dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
             dc.drawText(xL, y, Graphics.FONT_XTINY, rows[i][0], Graphics.TEXT_JUSTIFY_LEFT | vc);
+            var scText = "--";
+            if (sc != null) {
+                scText = sc.format("%d");
+            } else if (rows[i][3] != null) {
+                scText = rows[i][3].format("%d") + "d";
+            }
             dc.setColor(scoreColor(sc), Graphics.COLOR_TRANSPARENT);
-            dc.drawText(xS, y, Graphics.FONT_XTINY, sc == null ? "--" : sc.format("%d"),
+            dc.drawText(xS, y, Graphics.FONT_XTINY, scText,
                 Graphics.TEXT_JUSTIFY_CENTER | vc);
             dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
             dc.drawText(xV, y, Graphics.FONT_XTINY, rows[i][2], Graphics.TEXT_JUSTIFY_RIGHT | vc);

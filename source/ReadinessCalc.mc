@@ -16,7 +16,7 @@ module ReadinessCalc {
     const W_HRV = 0.30;
     const W_SLEEP = 0.20;
     const W_RHR = 0.15;
-    const MIN_BASELINE = 7;   // minimalny pocet dni pre baseline HRV / tepu
+    const MIN_BASELINE = 5;   // minimalny pocet dni pre baseline HRV / tepu
 
     function clamp(x, lo, hi) {
         if (x < lo) { return lo; }
@@ -169,9 +169,9 @@ module ReadinessCalc {
             "score" => total,
             "n" => count,
             "form" => [fScore, fPct],
-            "hrv" => [hScore, hVal, hMean],
+            "hrv" => [hScore, hVal, hMean, hBase.size()],
             "sleep" => [sScore, sSecs, sSc],
-            "rhr" => [rScore, rVal, rMean]
+            "rhr" => [rScore, rVal, rMean, rBase.size()]
         };
     }
 }
