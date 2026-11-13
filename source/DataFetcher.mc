@@ -1,6 +1,7 @@
 import Toybox.Application;
 import Toybox.Communications;
 import Toybox.Lang;
+import Toybox.PersistedContent;
 import Toybox.StringUtil;
 import Toybox.Time;
 import Toybox.Time.Gregorian;
@@ -85,28 +86,21 @@ class DataFetcher {
         return null;
     }
 
-    function onResponse(responseCode, data) {
+    // Typy parametrov musia presne zodpovedat ocakavaniu Communications.makeWebRequest
+    // (SDK 9.x ich kontroluje). Odpoved intervals.icu je JSON pole, preto ju
+    // pretypujeme na Object a pole overime za behu.
+    function onResponse(responseCode as Number,
+            data as Null or ByteArray or Dictionary or String or PersistedContent.Iterator) as Void {
         if (responseCode != 200) {
             finish(:error, responseCode);
             return;
         }
-        if (data instanceof Lang.Array) {
-            for (var i = 0; i < data.size(); i++) {
-                var rec = data[i];
-                if (!(rec instanceof Lang.Dictionary)) { continue; }
-                var id = rec["id"];
-                if (id == null) { continue; }
-                _days.put(id.toString(), [
-                    num(rec, "hrv"),
-                    num(rec, "restingHR"),
-                    num(rec, "sleepSecs"),
-                    num(rec, "sleepScore"),
-                    num(rec, "ctl"),
-                    num(rec, "atl")
-                ]);
-            }
+        var body = data as Object or Null;
+        if (body instanceof Lang.Array) {
+            data = null;
+            parseRecords(body);
         }
-        data = null;
+        body = null;
 
         _chunk++;
         if (_chunk < CHUNKS) {
@@ -116,6 +110,23 @@ class DataFetcher {
         var result = ReadinessCalc.compute(_days, dateStr(0), dateStr(1));
         _days = null;
         finish(:ok, result);
+    }
+
+    function parseRecords(data as Array) as Void {
+        for (var i = 0; i < data.size(); i++) {
+            var rec = data[i];
+            if (!(rec instanceof Lang.Dictionary)) { continue; }
+            var id = rec["id"];
+            if (id == null) { continue; }
+            _days.put(id.toString(), [
+                num(rec, "hrv"),
+                num(rec, "restingHR"),
+                num(rec, "sleepSecs"),
+                num(rec, "sleepScore"),
+                num(rec, "ctl"),
+                num(rec, "atl")
+            ]);
+        }
     }
 
     function finish(status, payload) {
