@@ -33,8 +33,8 @@
     <string id="Load3">data...</string>
     <string id="Form">Form</string>
     <string id="Sleep">Sleep</string>
-    <string id="SleepShort">Sl</string>
-    <string id="Rhr">RHR</string>
+    <string id="SleepShort">Sleep</string>
+    <string id="Rhr">RestHR</string>
     <string id="Hrv">HRV</string>
     <string id="Bb">BB</string>
     <string id="Factors">SCORE FACTORS</string>

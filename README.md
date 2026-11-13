@@ -119,7 +119,7 @@ Store texts, icon and screenshots are in `store/`.
 | *Phone not connected* | watch not connected to the phone / Garmin Connect not running |
 | *Response too large* | low memory – in `DataFetcher.mc` lower `CHUNK_DAYS` to 4 and raise `CHUNKS` to 7 |
 | *Invalid response* (−400) | incomplete or unexpected data from intervals.icu – try again later |
-| Sleep / RHR `--` | last night has not synced from Garmin Connect to intervals.icu yet |
+| Sleep / RestHR `--` | last night has not synced from Garmin Connect to intervals.icu yet |
 
 ---
 

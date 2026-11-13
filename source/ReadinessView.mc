@@ -279,7 +279,7 @@ class ReadinessView extends WatchUi.View {
         // na mensich displejoch (Vivoactive 4S 218 px, Forerunner 255 260 px)
         // kratsie popisky a medzery
         var small = w < 300;
-        var gap = small ? "  " : "   ";
+        var gap = small ? " " : "   ";   // na malych displejoch sa musi zmestit aj "Sleep"
         var line1 = tx("Form") + " " + (form[1] == null ? "--" : signed(form[1]) + "%")
                   + gap + (small ? tx("SleepShort") : tx("Sleep")) + " " + hhmm(sleep[1]);
         // Body Battery sa zobrazi namiesto HRV, ak sa pouzilo v skore
