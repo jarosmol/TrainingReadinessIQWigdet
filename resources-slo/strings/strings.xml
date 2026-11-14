@@ -5,11 +5,11 @@
     <string id="AthleteIdTitle">intervals.icu ID atleta (0 = moj ucet)</string>
     <string id="ApiKeyTitle">intervals.icu API kluc</string>
     <string id="Title">PRIPRAVENOST</string>
-    <string id="LblExcellent">Vyborna</string>
-    <string id="LblGood">Dobra</string>
-    <string id="LblFair">Priemerna</string>
+    <string id="LblPrime">Vynikajuca</string>
+    <string id="LblHigh">Vysoka</string>
+    <string id="LblModerate">Stredna</string>
     <string id="LblLow">Nizka</string>
-    <string id="LblVeryLow">Velmi nizka</string>
+    <string id="LblPoor">Slaba</string>
     <string id="LblNoData">Malo dat</string>
     <string id="ErrKey">Zly API kluc / ID</string>
     <string id="ErrId">Nespravne ID atleta</string>

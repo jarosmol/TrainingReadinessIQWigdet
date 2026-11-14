@@ -24,11 +24,11 @@ class ReadinessView extends WatchUi.View {
         View.initialize();
         _t = {
             "Title" => WatchUi.loadResource(Rez.Strings.Title),
-            "LblExcellent" => WatchUi.loadResource(Rez.Strings.LblExcellent),
-            "LblGood" => WatchUi.loadResource(Rez.Strings.LblGood),
-            "LblFair" => WatchUi.loadResource(Rez.Strings.LblFair),
+            "LblPrime" => WatchUi.loadResource(Rez.Strings.LblPrime),
+            "LblHigh" => WatchUi.loadResource(Rez.Strings.LblHigh),
+            "LblModerate" => WatchUi.loadResource(Rez.Strings.LblModerate),
             "LblLow" => WatchUi.loadResource(Rez.Strings.LblLow),
-            "LblVeryLow" => WatchUi.loadResource(Rez.Strings.LblVeryLow),
+            "LblPoor" => WatchUi.loadResource(Rez.Strings.LblPoor),
             "LblNoData" => WatchUi.loadResource(Rez.Strings.LblNoData),
             "ErrKey" => WatchUi.loadResource(Rez.Strings.ErrKey),
             "ErrId" => WatchUi.loadResource(Rez.Strings.ErrId),
@@ -117,22 +117,25 @@ class ReadinessView extends WatchUi.View {
         return _t[key];
     }
 
+    // Pasma a farby ako Garmin Training Readiness (Prime/High/Moderate/Low/Poor).
+    // Farby su presne z 64-farebnej palety MIP displejov (zlozky 00/55/AA/FF),
+    // takze vyzeraju rovnako na vivoactive 4S, Forerunner 255 aj AMOLED hodinkach.
     static function scoreColor(s) {
         if (s == null) { return Graphics.COLOR_LT_GRAY; }
-        if (s >= 80) { return 0x00C853; }   // zelena
-        if (s >= 60) { return 0x9CCC65; }   // svetlo zelena
-        if (s >= 40) { return 0xFFC400; }   // zlta
-        if (s >= 25) { return 0xFF8A00; }   // oranzova
-        return 0xFF3D00;                    // cervena
+        if (s >= 95) { return 0xAA55FF; }   // fialova  - Prime
+        if (s >= 75) { return 0x00AAFF; }   // modra    - High
+        if (s >= 50) { return 0x55FF55; }   // zelena   - Moderate
+        if (s >= 25) { return 0xFFAA00; }   // oranzova - Low
+        return 0xFF0000;                    // cervena  - Poor
     }
 
     function scoreLabel(s) {
         if (s == null) { return tx("LblNoData"); }
-        if (s >= 80) { return tx("LblExcellent"); }
-        if (s >= 60) { return tx("LblGood"); }
-        if (s >= 40) { return tx("LblFair"); }
+        if (s >= 95) { return tx("LblPrime"); }
+        if (s >= 75) { return tx("LblHigh"); }
+        if (s >= 50) { return tx("LblModerate"); }
         if (s >= 25) { return tx("LblLow"); }
-        return tx("LblVeryLow");
+        return tx("LblPoor");
     }
 
     static function r(x) {
@@ -296,7 +299,7 @@ class ReadinessView extends WatchUi.View {
         drawSleepLine(dc, cx, cy + inner * 0.40, line1, hhmm(sleep[1]));
         dc.drawText(cx, cy + inner * 0.60, Graphics.FONT_XTINY, line2, vc);
 
-        dc.setColor(_status == :error ? 0xFF8A00 : Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
+        dc.setColor(_status == :error ? 0xFFAA00 : Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
         dc.drawText(cx, cy + inner * 0.82, Graphics.FONT_XTINY, footerText(), vc);
     }
 

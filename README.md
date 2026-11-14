@@ -59,7 +59,8 @@ check *Settings → Connections → Garmin* in intervals.icu.
 - Missing factors are skipped and the weights are re-normalised.
 - HRV and resting HR need at least **7 days** of data in the last 4 weeks. Until then the factor is skipped and the
   detail screen shows the number of days collected (e.g. `3d`).
-- Bands: **80+ Excellent**, 60–79 Good, 40–59 Fair, 25–39 Low, below 25 Very low.
+- Bands and colours as in Garmin Training Readiness: **95+ Prime** (purple), 75–94 High (blue), 50–74 Moderate (green),
+  25–49 Low (orange), below 25 Poor (red). Colours come from the 64-colour palette of MIP displays, so they look the same on every watch.
 - **History** is back-calculated from intervals.icu data, so it is available immediately. Past days do not use Body Battery
   (the watch does not keep its history), so today's bar may differ slightly in how it is calculated.
 

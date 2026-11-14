@@ -5,11 +5,11 @@
     <string id="AthleteIdTitle">intervals.icu athlete ID (0 = my account)</string>
     <string id="ApiKeyTitle">intervals.icu API key</string>
     <string id="Title">READINESS</string>
-    <string id="LblExcellent">Excellent</string>
-    <string id="LblGood">Good</string>
-    <string id="LblFair">Fair</string>
+    <string id="LblPrime">Prime</string>
+    <string id="LblHigh">High</string>
+    <string id="LblModerate">Moderate</string>
     <string id="LblLow">Low</string>
-    <string id="LblVeryLow">Very low</string>
+    <string id="LblPoor">Poor</string>
     <string id="LblNoData">Not enough data</string>
     <string id="ErrKey">Wrong API key / ID</string>
     <string id="ErrId">Wrong athlete ID</string>

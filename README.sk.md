@@ -40,7 +40,8 @@ Ak niektora zlozka chyba, vahy sa automaticky prepocitaju. **Vivoactive 4S HRV n
 takze skore sa pocita z formy, spanku a tepu. Po prechode na Venu 3S sa HRV zapocita samo,
 netreba nic menit.
 
-Pasma: **80+ Vyborna**, 60–79 Dobra, 40–59 Priemerna, 25–39 Nizka, pod 25 Velmi nizka.
+Pasma a farby ako Garmin Training Readiness: **95+ Vynikajuca** (fialova), 75–94 Vysoka (modra), 50–74 Stredna (zelena),
+25–49 Nizka (oranzova), pod 25 Slaba (cervena). Farby su z 64-farebnej palety MIP displejov, takze vyzeraju rovnako na vsetkych hodinkach.
 
 Na priemer (baseline) HRV a tepu treba aspon 7 dni dat za posledne 4 tyzdne. Kym ich nie je dost, zlozka sa vynecha a v detaile sa namiesto skore ukaze pocet dni, napr. `3d`.
 
