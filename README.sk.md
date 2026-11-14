@@ -53,7 +53,7 @@ Na priemer (baseline) HRV a tepu treba aspon 7 dni dat za posledne 4 tyzdne. Kym
   klesne a s nou aj skore. *Ranne* skore pouziva sviezost pred dnesnym treningom (vcerajsie fitness a unava
   znizene o jeden den rovnako ako v intervals.icu), ostatne zlozky su rovnake. Ak sa lisia o viac ako 2 body,
   ranne skore sa ukaze male a bledo za velkym cislom (napr. `66 /87`), rozdiel je na prstenci svetlosivy
-  a na obrazovke so zlozkami je sviezost v tvare *rano ▸ teraz* s rannou hodnotou bledo (napr. `-11 ▸ -43%`).
+  a na obrazovke so zlozkami je sviezost s rannou hodnotou bledo pod nou (napr. `-43%`, pod tym `rano -11%`).
 - **HRV a pokojovy tep sa hodnotia podla dnesnej hodnoty v porovnani s vasim priemerom za 4 tyzdne** (z-skore):
   **85 = vas priemer**, viac = lepsie ako zvycajne (nizsi tep / vyssia HRV), menej = horsie.
   Obrazovka so zlozkami ukazuje dnesnu hodnotu.

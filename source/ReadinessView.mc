@@ -62,6 +62,7 @@ class ReadinessView extends WatchUi.View {
             "RhrShort" => WatchUi.loadResource(Rez.Strings.RhrShort),
             "RhrLong" => WatchUi.loadResource(Rez.Strings.RhrLong),
             "BodyBatLong" => WatchUi.loadResource(Rez.Strings.BodyBatLong),
+            "MornLbl" => WatchUi.loadResource(Rez.Strings.MornLbl),
             "Hrv" => WatchUi.loadResource(Rez.Strings.Hrv),
             "Bb" => WatchUi.loadResource(Rez.Strings.Bb),
             "Factors" => WatchUi.loadResource(Rez.Strings.Factors),
@@ -401,15 +402,27 @@ class ReadinessView extends WatchUi.View {
     function drawDetail(dc, w, h, cx, cy) {
         var vc = Graphics.TEXT_JUSTIFY_VCENTER;
         var fh = dc.getFontHeight(_rowFont);
-        var rowH = fh * 1.32;
         var mor = part("morning");
-        var top = cy - rowH * 2.2;
+        var form = _result["form"];
 
+        // Ranna sviezost (pred dnesnym treningom), ak sa lisi od aktualnej -
+        // pod sviezostou bledo "rano -30%"
+        var mornFresh = null;
+        if (mor != null && form[1] != null && mor.size() > 1 && mor[1] != null) {
+            if (r(form[1]) != r(mor[1])) {
+                mornFresh = tx("MornLbl") + " " + signed(mor[1]) + "%";
+            }
+        }
+        var subH = (mornFresh != null) ? dc.getFontHeight(_small) * 0.85 : 0;
+        // s riadkom navyse mierne hustejsie, aby sa vsetko zmestilo aj na Vivoactive 4S
+        var rowH = fh * ((mornFresh != null) ? 1.18 : 1.32);
+
+        // nadpis na rovnakom mieste a rovnakym pismom ako na strankach s historiou
+        var top = cy - h * 0.30;
         dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(cx, top, _rowFont, tx("Factors"),
+        dc.drawText(cx, top, Graphics.FONT_XTINY, tx("Factors"),
             Graphics.TEXT_JUSTIFY_CENTER | vc);
 
-        var form = _result["form"];
         var hrv = _result["hrv"];
         var sleep = _result["sleep"];
         var rhr = _result["rhr"];
@@ -440,14 +453,6 @@ class ReadinessView extends WatchUi.View {
         var xV = cx + w * 0.38;
         var halfScoreW = dc.getTextWidthInPixels("100", _rowFont) / 2;
 
-        // Sviezost rano -> teraz: "-30 > -68%" (ranna bledo, sipka), ak sa lisia
-        var mornFresh = null;
-        if (mor != null && form[1] != null && mor.size() > 1 && mor[1] != null) {
-            if (r(form[1]) != r(mor[1])) {
-                mornFresh = signed(mor[1]);
-            }
-        }
-
         // Plne nazvy (Freshness, Resting HR, Body Battery), ak sa zmestia pred stlpec
         // so skore, inak skratky
         var room = xS - xL - halfScoreW - 4;
@@ -456,8 +461,9 @@ class ReadinessView extends WatchUi.View {
                 rows[j][0] = rows[j][4];
             }
         }
+        var y = top;
         for (var i = 0; i < rows.size(); i++) {
-            var y = top + rowH * (i + 1.2);
+            y = top + rowH * (i + 1.2) + (i > 0 ? subH : 0);
             var sc = r(rows[i][1]);
             dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
             dc.drawText(xL, y, _rowFont, rows[i][0], Graphics.TEXT_JUSTIFY_LEFT | vc);
@@ -476,28 +482,15 @@ class ReadinessView extends WatchUi.View {
             dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
             dc.drawText(xV, y, _rowFont, rows[i][2], Graphics.TEXT_JUSTIFY_RIGHT | vc);
             if (i == 0 && mornFresh != null) {
-                drawMorningArrow(dc, xV - dc.getTextWidthInPixels(rows[i][2] as String, _rowFont),
-                    y, mornFresh as String, _rowFont);
+                dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
+                dc.drawText(xV, y + fh * 0.48 + subH * 0.3, _small, mornFresh as String,
+                    Graphics.TEXT_JUSTIFY_RIGHT | vc);
             }
         }
 
         dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(cx, top + rowH * (rows.size() + 1.6), _small, tx("DetailFooter"),
+        dc.drawText(cx, y + rowH * 1.4, _small, tx("DetailFooter"),
             Graphics.TEXT_JUSTIFY_CENTER | vc);
-    }
-
-    // Pred hodnotou (konci na xRight): "<ranna hodnota> >" - ranna bledo, sipka ako trojuholnik.
-    function drawMorningArrow(dc, xRight, y, text, font) {
-        var fh = dc.getFontHeight(font);
-        var aw = fh * 0.34;
-        var ah = fh * 0.26;
-        var gap = fh * 0.18;
-        var ax = xRight - gap - aw;
-        dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
-        // cislice su v pisme Garmin nizsie nez stred riadku - sipku posun dole
-        var ay = y + fh * 0.10;
-        dc.fillPolygon([[ax, ay - ah], [ax + aw, ay], [ax, ay + ah]]);
-        dc.drawText(ax - gap, y, font, text, Graphics.TEXT_JUSTIFY_RIGHT | Graphics.TEXT_JUSTIFY_VCENTER);
     }
 
     // Historia: skore za poslednych 7 dni ako stlpcovy graf (najnovsi vpravo).

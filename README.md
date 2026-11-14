@@ -66,7 +66,7 @@ check *Settings → Connections → Garmin* in intervals.icu.
   (yesterday's fitness and fatigue decayed by one day, as intervals.icu does); all other factors are the same.
   When the two differ by more than 2 points, the morning score is shown small and pale after the big number
   (e.g. `66 /87`), the ring shows the difference as a light grey segment, and the factors screen shows freshness
-  as *morning ▸ now* with the morning value pale (e.g. `-11 ▸ -43%`).
+  with the morning value pale below it (e.g. `-43%`, below `morning -11%`).
 - **HRV and resting HR are scored from today's value compared with your 4-week average** (z-score):
   **85 = your average**, higher = better than usual (lower resting HR / higher HRV), lower = worse.
   The factors screen shows today's value.
