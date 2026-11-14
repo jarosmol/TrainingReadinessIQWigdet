@@ -469,7 +469,9 @@ class ReadinessView extends WatchUi.View {
         var gap = fh * 0.18;
         var ax = xRight - gap - aw;
         dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
-        dc.fillPolygon([[ax, y - ah], [ax + aw, y], [ax, y + ah]]);
+        // cislice su v pisme Garmin nizsie nez stred riadku - sipku posun dole
+        var ay = y + fh * 0.10;
+        dc.fillPolygon([[ax, ay - ah], [ax + aw, ay], [ax, ay + ah]]);
         dc.drawText(ax - gap, y, font, text, Graphics.TEXT_JUSTIFY_RIGHT | Graphics.TEXT_JUSTIFY_VCENTER);
     }
 
