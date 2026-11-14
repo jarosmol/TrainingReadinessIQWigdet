@@ -44,7 +44,7 @@ check *Settings → Connections → Garmin* in intervals.icu.
 
 | Factor | Weight | Source | Scoring |
 |---|---|---|---|
-| **Freshness** (*Fresh*) | 35 % | intervals.icu form = fitness − fatigue, all activities | as % of fitness: +10 % or more = 95, 0 % = 80, −20 % = 50, −40 % = 15 |
+| **Freshness** (*Fresh*) | 35 % | intervals.icu form = fitness − fatigue, all activities | as % of fitness, following intervals.icu zones: +10 % or more = 95, 0 % = 85, −10 % = 75, −20 % = 60, −30 % = 45, −40 % = 25 |
 | **HRV** | 30 % | overnight HRV from the watch | today vs. your own ~4-week baseline (z-score) |
 | **Sleep** | 20 % | watch | sleep score; if missing, sleep duration (8 h = 100, 6 h = 65) |
 | **Resting HR** | 15 % | watch | higher than your baseline = worse |

@@ -59,9 +59,11 @@ module ReadinessCalc {
         if (ctl == null || atl == null) { return null; }
         if (ctl < 1.0) { return null; }
         var pct = (ctl - atl) / ctl * 100.0;
+        // pasma podla zon intervals.icu: -10 az -30 % je "optimalny" trening,
+        // preto sa tam penalizuje miernejsie; pod -30 % (vysoke riziko) skore rychlo klesa
         return interp(pct,
             [-50.0, -40.0, -30.0, -20.0, -10.0, 0.0, 10.0],
-            [  5.0,  15.0,  30.0,  50.0,  65.0, 80.0, 95.0]);
+            [ 10.0,  25.0,  45.0,  60.0,  75.0, 85.0, 95.0]);
     }
 
     function hrvScore(today, baseline) {

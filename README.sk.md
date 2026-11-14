@@ -20,7 +20,7 @@ Na Forerunneri 255 sa widget ovlada tlacidlami: **START** prepina obrazovky, **p
 
 | Zlozka | Vaha | Odkial | Ako sa hodnoti |
 |---|---|---|---|
-| **Sviezost** | 35 % | forma z intervals.icu (fitness – unava, zo vsetkych aktivit) | v % z fitness: +10 % a viac = 95 b., 0 % = 80 b., −20 % = 50 b., −40 % = 15 b. |
+| **Sviezost** | 35 % | forma z intervals.icu (fitness – unava, zo vsetkych aktivit) | v % z fitness, podla zon intervals.icu: +10 % a viac = 95 b., 0 % = 85 b., −10 % = 75 b., −20 % = 60 b., −30 % = 45 b., −40 % = 25 b. |
 | **HRV** | 30 % | nocna HRV z hodiniek | dnesna hodnota oproti vasmu priemeru za ~4 tyzdne (z-skore) |
 | **Spanok** | 20 % | hodinky | skore spanku; ak chyba, dlzka spanku (8 h = 100 b., 6 h = 65 b.) |
 | **Pokojovy tep** | 15 % | hodinky | vyssi ako vas priemer = horsie |
