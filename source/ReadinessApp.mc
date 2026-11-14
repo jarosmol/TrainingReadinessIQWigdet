@@ -21,6 +21,12 @@ class ReadinessApp extends Application.AppBase {
         return [_view, new ReadinessDelegate(_view)];
     }
 
+    // Glance pre hodinky so zoznamom glances (napr. Forerunner 255, Venu 3).
+    (:glance)
+    function getGlanceView() {
+        return [new ReadinessGlance()];
+    }
+
     // Po zmene nastaveni (napr. API kluca) nacitaj data znova.
     function onSettingsChanged() {
         if (_view != null) {

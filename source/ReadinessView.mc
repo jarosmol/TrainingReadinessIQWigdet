@@ -67,8 +67,6 @@ class ReadinessView extends WatchUi.View {
             "Last7" => WatchUi.loadResource(Rez.Strings.Last7),
             "Refresh" => WatchUi.loadResource(Rez.Strings.Refresh),
             "DayOfMonth" => WatchUi.loadResource(Rez.Strings.DayOfMonth),
-            "Morning" => WatchUi.loadResource(Rez.Strings.Morning),
-            "Now" => WatchUi.loadResource(Rez.Strings.Now),
             "Last30" => WatchUi.loadResource(Rez.Strings.Last30),
             "Stats" => WatchUi.loadResource(Rez.Strings.Stats)
         };
@@ -272,21 +270,6 @@ class ReadinessView extends WatchUi.View {
                 dc.drawArc(cx, cy, rad, Graphics.ARC_CLOCKWISE, 90, end);
             }
         }
-        // Znacka ranneho skore na prstenci - iba ak sa od aktualneho lisi (po treningu)
-        var mor = part("morning");
-        if (mor != null && score != null) {
-            var ms = r(mor[0]);
-            if (ms != null && (ms - score > 2 || score - ms > 2)) {
-                var ang = Math.toRadians(90.0 - 360.0 * ms / 100.0);
-                var c = Math.cos(ang);
-                var sn = Math.sin(ang);
-                var r1 = rad - pen / 2.0 - 2;
-                var r2 = rad + pen / 2.0 + 1;
-                dc.setPenWidth(3);
-                dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
-                dc.drawLine(cx + r1 * c, cy - r1 * sn, cx + r2 * c, cy - r2 * sn);
-            }
-        }
         dc.setPenWidth(1);
 
         var inner = rad - pen;
@@ -295,9 +278,25 @@ class ReadinessView extends WatchUi.View {
         dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
         dc.drawText(cx, cy - inner * 0.66, Graphics.FONT_XTINY, tx("Title"), vc);
 
+        var scoreText = score == null ? "--" : score.format("%d");
+        var numberY = cy - inner * 0.27;
         dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(cx, cy - inner * 0.27, Graphics.FONT_NUMBER_MEDIUM,
-            score == null ? "--" : score.format("%d"), vc);
+        dc.drawText(cx, numberY, Graphics.FONT_NUMBER_MEDIUM, scoreText, vc);
+
+        // Ranne skore (bez dnesnych treningov) za lomitkom, male a blede -
+        // iba ak sa od aktualneho lisi o viac ako 2 body (po treningu)
+        var mor = part("morning");
+        if (mor != null && score != null) {
+            var ms = r(mor[0]);
+            if (ms != null && (ms - score > 2 || score - ms > 2)) {
+                var numW = dc.getTextWidthInPixels(scoreText, Graphics.FONT_NUMBER_MEDIUM);
+                var digitH = dc.getFontHeight(Graphics.FONT_NUMBER_MEDIUM) * 0.62;
+                dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
+                dc.drawText(cx + numW / 2 + 3, numberY + digitH / 2 - dc.getFontHeight(Graphics.FONT_XTINY) / 2,
+                    Graphics.FONT_XTINY, "/" + ms.format("%d"),
+                    Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
+            }
+        }
 
         dc.setColor(color, Graphics.COLOR_TRANSPARENT);
         dc.drawText(cx, cy + inner * 0.12, Graphics.FONT_TINY, scoreLabel(score), vc);
@@ -362,8 +361,7 @@ class ReadinessView extends WatchUi.View {
         var fh = dc.getFontHeight(Graphics.FONT_XTINY);
         var rowH = fh * 1.32;
         var mor = part("morning");
-        var nRows = (mor != null) ? 5 : 4;
-        var top = cy - rowH * (nRows / 2.0 + 0.2);
+        var top = cy - rowH * 2.2;
 
         dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
         dc.drawText(cx, top, Graphics.FONT_XTINY, tx("Factors"),
@@ -398,14 +396,13 @@ class ReadinessView extends WatchUi.View {
         var xV = cx + w * 0.36;
         var halfScoreW = dc.getTextWidthInPixels("100", Graphics.FONT_XTINY) / 2;
 
-        // Posledny riadok: ranne skore (bez dnesnych treningov), vpravo aktualne skore
-        if (mor != null) {
-            var nowScore = r(_result["score"]);
-            var nowText = nowScore == null ? "" : tx("Now") + " " + nowScore.format("%d");
-            if (dc.getTextWidthInPixels(nowText, Graphics.FONT_XTINY) > xV - xS - halfScoreW - 4) {
-                nowText = nowScore == null ? "" : nowScore.format("%d");
+        // Sviezost: aktualna / ranna (pred dnesnym treningom), ak sa lisia
+        if (mor != null && form[1] != null && mor.size() > 1 && mor[1] != null) {
+            var nowPct = r(form[1]);
+            var mornPct = r(mor[1]);
+            if (nowPct != mornPct) {
+                rows[0][2] = signed(form[1]) + "/" + signed(mor[1]) + "%";
             }
-            rows.add([tx("Morning"), mor[0], nowText, null]);
         }
 
         // Plny nazov (Freshness), ak sa zmesti pred stlpec so skore, inak skratka (Fresh)

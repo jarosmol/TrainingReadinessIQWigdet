@@ -64,8 +64,10 @@ check *Settings → Connections → Garmin* in intervals.icu.
 - **Current vs. morning score.** The big number is the *current* score: after a workout intervals.icu raises fatigue,
   freshness drops and so does the score. The *morning* score uses freshness from before today's training
   (yesterday's fitness and fatigue decayed by one day, as intervals.icu does); all other factors are the same.
-  When the two differ by more than 2 points, a white tick on the ring marks the morning score, and the factors
-  screen shows it in the **Morning** row.
+  When the two differ by more than 2 points, the morning score is shown small and pale after the big number
+  (e.g. `66 /87`), and the factors screen shows freshness as *current / morning* (e.g. `-43/-11%`).
+- **Glance:** on watches with a glance list (e.g. Forerunner 255, Venu 3) the widget shows the last downloaded
+  score, morning score and band in the list. The glance does not download data itself – open the widget to refresh.
 - **History (7 and 30 days)** shows each day's **morning** score, back-calculated from intervals.icu data, so it is
   available immediately and not affected by the time of day you trained. Past days do not use Body Battery
   (the watch does not keep its history). The 30-day screen also shows average, minimum and maximum.
