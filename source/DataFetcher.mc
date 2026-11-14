@@ -7,18 +7,18 @@ import Toybox.StringUtil;
 import Toybox.Time;
 import Toybox.Time.Gregorian;
 
-// Stiahne wellness data z intervals.icu po tyzdnovych castiach (4 x 7 dni),
+// Stiahne wellness data z intervals.icu po tyzdnovych castiach (9 x 7 dni),
 // aby odpovede zostali male aj pre hodinky s malou pamatou (Vivoactive 4S).
 class DataFetcher {
 
-    const CHUNKS = 4;
+    const CHUNKS = 9;          // 9 x 7 = 63 dni: 30 dni historie + 4-tyzdnovy baseline
     const CHUNK_DAYS = 7;
 
     var _callback = null;   // Method(status as Symbol, payload)
     var _chunk = 0;
     var _days = null;
 
-    const HISTORY_DAYS = 7;
+    const HISTORY_DAYS = 30;
 
     // Ranne maximum Body Battery (od polnoci) z historie senzorov hodiniek.
     // Hodinky bez tejto funkcie (alebo so starsim Connect IQ) vratia null.
@@ -161,7 +161,7 @@ class DataFetcher {
         }
         var result = ReadinessCalc.compute(_days, keys, readBodyBatteryPeak());
         var hist = ReadinessCalc.history(_days, keys, HISTORY_DAYS);
-        hist[0] = result["score"];
+        hist[0] = result["morning"][0];   // historia = ranne skore
         var labels = [];
         for (var k = 0; k < HISTORY_DAYS; k++) {
             var t = Time.now().subtract(new Time.Duration(k * 86400));

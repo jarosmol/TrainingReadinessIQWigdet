@@ -34,7 +34,7 @@ Your intervals.icu account must receive wellness data from Garmin (sleep, restin
 check *Settings → Connections → Garmin* in intervals.icu.
 
 ### Controls
-- **Tap / START** – cycles screens: **overview → score factors → last 7 days**.
+- **Tap / START** – cycles screens: **overview → score factors → last 7 days → last 30 days**.
 - **Hold / menu** – forces a data refresh.
 - Data refreshes automatically when the widget is opened and the data is older than 30 minutes.
 
@@ -61,8 +61,17 @@ check *Settings → Connections → Garmin* in intervals.icu.
   detail screen shows the number of days collected (e.g. `3d`).
 - Bands and colours as in Garmin Training Readiness: **95+ Prime** (purple), 75–94 High (blue), 50–74 Moderate (green),
   25–49 Low (orange), below 25 Poor (red). Colours come from the 64-colour palette of MIP displays, so they look the same on every watch.
-- **History** is back-calculated from intervals.icu data, so it is available immediately. Past days do not use Body Battery
-  (the watch does not keep its history), so today's bar may differ slightly in how it is calculated.
+- **Current vs. morning score.** The big number is the *current* score: after a workout intervals.icu raises fatigue,
+  freshness drops and so does the score. The *morning* score uses freshness from before today's training
+  (yesterday's fitness and fatigue decayed by one day, as intervals.icu does); all other factors are the same.
+  When the two differ by more than 2 points, a white tick on the ring marks the morning score, and the factors
+  screen shows it in the **Morning** row.
+- **History (7 and 30 days)** shows each day's **morning** score, back-calculated from intervals.icu data, so it is
+  available immediately and not affected by the time of day you trained. Past days do not use Body Battery
+  (the watch does not keep its history). The 30-day screen also shows average, minimum and maximum.
+- The widget downloads 63 days of wellness data (30 days of history + 4-week baseline); HRV and resting HR are
+  always compared with the previous 4 weeks.
+- The app version is shown on the loading screen.
 
 All weights and thresholds are at the top of `source/ReadinessCalc.mc`.
 
@@ -145,6 +154,6 @@ scripts/export.ps1              exports public and beta .iq files, checks that n
 source/ReadinessApp.mc          app entry point
 source/ReadinessView.mc         drawing, cache, error messages, history chart
 source/ReadinessDelegate.mc     input (buttons / touch)
-source/DataFetcher.mc           downloads intervals.icu wellness data in 7-day chunks, reads Body Battery
+source/DataFetcher.mc           downloads 63 days of intervals.icu wellness data in 7-day chunks, reads Body Battery
 source/ReadinessCalc.mc         score calculation (weights and thresholds at the top)
 ```

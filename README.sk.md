@@ -48,10 +48,17 @@ Pasma a farby ako Garmin Training Readiness: **95+ Vynikajuca** (fialova), 75–
 Na priemer (baseline) HRV a tepu treba aspon 7 dni dat za posledne 4 tyzdne. Kym ich nie je dost, zlozka sa vynecha a v detaile sa namiesto skore ukaze pocet dni, napr. `3d`.
 
 ### Ovladanie
-- **Stlacenie / klepnutie** – prepina obrazovky: **prehlad → zlozky skore → historia 7 dni**.
-- **Historia** je spatne dopocitana z dat intervals.icu, takze je hned k dispozicii. Pri minulych dnoch
-  sa nepouziva nahrada z vcerajska ani Body Battery (hodinky jeho historiu neuchovavaju),
-  preto sa dnesny stlpec moze od vcerajsich trochu lisit sposobom vypoctu.
+- **Stlacenie / klepnutie** – prepina obrazovky: **prehlad → zlozky skore → historia 7 dni → historia 30 dni**.
+- **Aktualne a ranne skore.** Velke cislo je *aktualne* skore: po treningu intervals.icu zvysi unavu, sviezost
+  klesne a s nou aj skore. *Ranne* skore pouziva sviezost pred dnesnym treningom (vcerajsie fitness a unava
+  znizene o jeden den rovnako ako v intervals.icu), ostatne zlozky su rovnake. Ak sa lisia o viac ako 2 body,
+  biela znacka na prstenci ukazuje ranne skore a na obrazovke so zlozkami je v riadku **Rano**.
+- **Historia (7 aj 30 dni)** ukazuje **ranne** skore kazdeho dna, spatne dopocitane z dat intervals.icu, takze je
+  hned k dispozicii a nezavisi od toho, kedy ste v ten den trenovali. Pri minulych dnoch sa nepouziva
+  Body Battery (hodinky jeho historiu neuchovavaju). Obrazovka 30 dni ukazuje aj priemer, minimum a maximum.
+- Widget stahuje 63 dni dat (30 dni historie + 4-tyzdnovy baseline); HRV a tep sa vzdy porovnavaju
+  s predchadzajucimi 4 tyzdnami.
+- Cislo verzie je na obrazovke nacitavania.
 - **Podrzanie (menu)** – vynutene obnovenie dat.
 - Data sa pri otvoreni widgetu obnovia automaticky, ak su starsie ako 30 minut.
 
@@ -201,6 +208,6 @@ scripts/export.ps1              export verejnej a beta verzie (.iq) s kontrolou 
 source/ReadinessApp.mc          vstupny bod aplikacie
 source/ReadinessView.mc         kreslenie obrazovky, cache, chybove hlasenia
 source/ReadinessDelegate.mc     ovladanie (tlacidla / dotyk)
-source/DataFetcher.mc           stahovanie dat z intervals.icu po 7-dnovych castiach
+source/DataFetcher.mc           stahovanie 63 dni dat z intervals.icu po 7-dnovych castiach
 source/ReadinessCalc.mc         vypocet skore (vahy a pasma sa daju upravit hore v subore)
 ```

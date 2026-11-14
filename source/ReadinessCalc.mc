@@ -18,6 +18,9 @@ module ReadinessCalc {
     const W_SLEEP = 0.20;
     const W_RHR = 0.15;
     const W_BB = 0.20;    // Body Battery iba namiesto HRV (prekryva sa so spankom)
+    const BASE_DAYS = 27;     // baseline HRV a tepu = predchadzajucich 27 dni (~4 tyzdne)
+    const K_CTL = 0.976472;   // exp(-1/42): denny pokles fitness (intervals.icu)
+    const K_ATL = 0.866878;   // exp(-1/7):  denny pokles unavy
     const MIN_BASELINE = 7;   // minimalny pocet dni pre baseline HRV / tepu
 
     function clamp(x, lo, hi) {
@@ -109,15 +112,32 @@ module ReadinessCalc {
         return null;
     }
 
-    function baselineExcluding(days, skipKey, idx) {
+    // Baseline zlozky idx z dni keys[from..to) okrem dna skipKey.
+    function baselineWindow(days, keys, from, to, skipKey, idx) {
         var out = [];
-        var keys = days.keys();
-        for (var i = 0; i < keys.size(); i++) {
-            if (skipKey != null && keys[i].equals(skipKey)) { continue; }
-            var v = days[keys[i]][idx];
+        var end = to < keys.size() ? to : keys.size();
+        for (var j = from; j < end; j++) {
+            var k = keys[j];
+            if (skipKey != null && k.equals(skipKey)) { continue; }
+            var v = field(days, k, idx);
             if (v != null) { out.add(v); }
         }
         return out;
+    }
+
+    // Sviezost RANO dna keys[i] (pred dnesnym treningom): vcerajsie fitness a unava
+    // znizene o jeden den rovnako ako v intervals.icu (exponencialny pokles, 42 a 7 dni).
+    // Vrati [skore, percento] alebo [null, null].
+    function morningForm(days, keys, i) {
+        if (i + 1 >= keys.size()) { return [null, null]; }
+        var ctl = field(days, keys[i + 1], 4);
+        var atl = field(days, keys[i + 1], 5);
+        if (ctl == null || atl == null) { return [null, null]; }
+        ctl = ctl * K_CTL;
+        atl = atl * K_ATL;
+        var sc = formScore(ctl, atl);
+        if (sc == null) { return [null, null]; }
+        return [sc, (ctl - atl) / ctl * 100.0];
     }
 
     // Vazeny priemer dostupnych zloziek. parts: [[skore alebo null, vaha], ...],
@@ -137,16 +157,6 @@ module ReadinessCalc {
             return [sum / wsum, count];
         }
         return [null, count];
-    }
-
-    // Hodnoty zlozky idx z dni keys[start..] (starsie dni) - baseline pre historiu.
-    function baselineFrom(days, keys, start, idx) {
-        var out = [];
-        for (var j = start; j < keys.size(); j++) {
-            var v = field(days, keys[j], idx);
-            if (v != null) { out.add(v); }
-        }
-        return out;
     }
 
     // Body Battery (ranne maximum) -> skore. Pouziva sa iba ako nahrada HRV.
@@ -172,11 +182,18 @@ module ReadinessCalc {
         var fScore = formScore(ctl, atl);
         var fPct = null;
         if (fScore != null) { fPct = (ctl - atl) / ctl * 100.0; }
+        // Sviezost rano (bez dnesnych treningov)
+        var mf = morningForm(days, keys, 0);
+        if (fDay != today) {   // pickDay vracia ten isty objekt, staci porovnat referenciu
+            // dnesny zaznam este nie je - aktualny stav = ranny
+            fScore = mf[0];
+            fPct = mf[1];
+        }
 
         // HRV
         var hDay = pickDay(days, today, yest, 0);
         var hVal = field(days, hDay, 0);
-        var hBase = baselineExcluding(days, hDay, 0);
+        var hBase = baselineWindow(days, keys, 0, BASE_DAYS + 1, hDay, 0);
         var hScore = hrvScore(hVal, hBase);
         var hMean = (hBase.size() > 0) ? meanSd(hBase)[0] : null;
 
@@ -188,7 +205,7 @@ module ReadinessCalc {
         // Pokojovy tep
         var rDay = pickDay(days, today, yest, 1);
         var rVal = field(days, rDay, 1);
-        var rBase = baselineExcluding(days, rDay, 1);
+        var rBase = baselineWindow(days, keys, 0, BASE_DAYS + 1, rDay, 1);
         var rScore = rhrScore(rVal, rBase);
         var rMean = (rBase.size() > 0) ? meanSd(rBase)[0] : null;
 
@@ -201,10 +218,14 @@ module ReadinessCalc {
 
         var c = combine([[fScore, W_FORM], [hScore, W_HRV], [bScore, W_BB],
                          [sScore, W_SLEEP], [rScore, W_RHR]]);
+        // Ranne skore: rovnake zlozky, iba sviezost bez dnesnych treningov
+        var m = combine([[mf[0], W_FORM], [hScore, W_HRV], [bScore, W_BB],
+                         [sScore, W_SLEEP], [rScore, W_RHR]]);
 
         return {
             "score" => c[0],
             "n" => c[1],
+            "morning" => [m[0], mf[1]],
             "form" => [fScore, fPct],
             "hrv" => [hScore, hVal, hMean, hBase.size()],
             "bb" => [bScore, bbPeak],
@@ -213,22 +234,23 @@ module ReadinessCalc {
         };
     }
 
-    // Skore za den keys[i] iba z dat toho dna, baseline zo starsich dni.
-    // Body Battery historia nie je dostupna, preto sa v historii nepouziva.
+    // RANNE skore dna keys[i]: sviezost zo stavu pred treningom toho dna, spanok, HRV
+    // a tep toho dna, baseline z 27 predchadzajucich dni. Body Battery historia nie je
+    // dostupna, preto sa v historii nepouziva.
     function dayScore(days, keys, i) {
         var d = keys[i];
-        var ctl = field(days, d, 4);
-        var atl = field(days, d, 5);
-        var fScore = formScore(ctl, atl);
-        var hScore = hrvScore(field(days, d, 0), baselineFrom(days, keys, i + 1, 0));
-        var rScore = rhrScore(field(days, d, 1), baselineFrom(days, keys, i + 1, 1));
+        var mf = morningForm(days, keys, i);
+        var hScore = hrvScore(field(days, d, 0),
+            baselineWindow(days, keys, i + 1, i + 1 + BASE_DAYS, null, 0));
+        var rScore = rhrScore(field(days, d, 1),
+            baselineWindow(days, keys, i + 1, i + 1 + BASE_DAYS, null, 1));
         var sScore = sleepScoreFrom(field(days, d, 3), field(days, d, 2));
-        return combine([[fScore, W_FORM], [hScore, W_HRV],
+        return combine([[mf[0], W_FORM], [hScore, W_HRV],
                         [sScore, W_SLEEP], [rScore, W_RHR]])[0];
     }
 
-    // Skore za poslednych n dni: index 0 = dnes. Dnesok doplni volajuci
-    // hlavnym skore (s nahradnymi hodnotami z vcera a Body Battery).
+    // Ranne skore za poslednych n dni: index 0 = dnes. Dnesok doplni volajuci
+    // rannym skore z compute() (s nahradnymi hodnotami z vcera a Body Battery).
     function history(days, keys, n) {
         var out = [];
         for (var i = 0; i < n; i++) {

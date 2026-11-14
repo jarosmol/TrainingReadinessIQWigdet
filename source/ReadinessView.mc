@@ -1,6 +1,7 @@
 import Toybox.Application;
 import Toybox.Graphics;
 import Toybox.Lang;
+import Toybox.Math;
 import Toybox.Time;
 import Toybox.WatchUi;
 
@@ -17,7 +18,7 @@ class ReadinessView extends WatchUi.View {
     var _fetchedAt = 0;             // Time.now().value() posledneho uspesneho stiahnutia
     var _status = :idle;            // :idle, :loading, :nokey, :error
     var _errorCode = 0;
-    var _page = 0;                  // 0 prehlad, 1 zlozky, 2 historia
+    var _page = 0;                  // 0 prehlad, 1 zlozky, 2 historia 7 dni, 3 historia 30 dni
     var _t;                         // nacitane texty v jazyku hodiniek
 
     function initialize() {
@@ -65,7 +66,11 @@ class ReadinessView extends WatchUi.View {
             "DetailFooter" => WatchUi.loadResource(Rez.Strings.DetailFooter),
             "Last7" => WatchUi.loadResource(Rez.Strings.Last7),
             "Refresh" => WatchUi.loadResource(Rez.Strings.Refresh),
-            "DayOfMonth" => WatchUi.loadResource(Rez.Strings.DayOfMonth)
+            "DayOfMonth" => WatchUi.loadResource(Rez.Strings.DayOfMonth),
+            "Morning" => WatchUi.loadResource(Rez.Strings.Morning),
+            "Now" => WatchUi.loadResource(Rez.Strings.Now),
+            "Last30" => WatchUi.loadResource(Rez.Strings.Last30),
+            "Stats" => WatchUi.loadResource(Rez.Strings.Stats)
         };
         _fetcher = new DataFetcher();
         var cached = Application.Storage.getValue(CACHE_KEY);
@@ -79,9 +84,9 @@ class ReadinessView extends WatchUi.View {
         refresh(false);
     }
 
-    // Prehlad -> zlozky -> historia -> prehlad
+    // Prehlad -> zlozky -> 7 dni -> 30 dni -> prehlad
     function nextPage() {
-        _page = (_page + 1) % 3;
+        _page = (_page + 1) % 4;
         WatchUi.requestUpdate();
     }
 
@@ -89,7 +94,8 @@ class ReadinessView extends WatchUi.View {
         if (_fetcher.isBusy()) { return; }
         var age = Time.now().value() - _fetchedAt;
         // cache zo starsej verzie widgetu (bez historie) sa obnovi hned
-        var complete = part("hist") != null;
+        var h = part("hist") as Array or Null;
+        var complete = h != null && h.size() >= 30;
         if (!force && _result != null && complete && age < STALE_SECS) { return; }
         _status = :loading;
         WatchUi.requestUpdate();
@@ -217,6 +223,10 @@ class ReadinessView extends WatchUi.View {
                 drawMessage(dc, cx, cy, errorText(), tx("Retry1"), tx("Retry2"));
             } else {
                 drawMessage(dc, cx, cy, tx("Load1"), tx("Load2"), tx("Load3"));
+                var fhs = dc.getFontHeight(Graphics.FONT_SMALL);
+                dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
+                dc.drawText(cx, cy + fhs * 1.9, Graphics.FONT_XTINY, "v" + tx("AppVersion"),
+                    Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
             }
             return;
         }
@@ -225,6 +235,8 @@ class ReadinessView extends WatchUi.View {
             drawDetail(dc, w, h, cx, cy);
         } else if (_page == 2) {
             drawHistory(dc, w, h, cx, cy);
+        } else if (_page == 3) {
+            drawMonth(dc, w, h, cx, cy);
         } else {
             drawMain(dc, w, h, cx, cy);
         }
@@ -260,30 +272,31 @@ class ReadinessView extends WatchUi.View {
                 dc.drawArc(cx, cy, rad, Graphics.ARC_CLOCKWISE, 90, end);
             }
         }
+        // Znacka ranneho skore na prstenci - iba ak sa od aktualneho lisi (po treningu)
+        var mor = part("morning");
+        if (mor != null && score != null) {
+            var ms = r(mor[0]);
+            if (ms != null && (ms - score > 2 || score - ms > 2)) {
+                var ang = Math.toRadians(90.0 - 360.0 * ms / 100.0);
+                var c = Math.cos(ang);
+                var sn = Math.sin(ang);
+                var r1 = rad - pen / 2.0 - 2;
+                var r2 = rad + pen / 2.0 + 1;
+                dc.setPenWidth(3);
+                dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
+                dc.drawLine(cx + r1 * c, cy - r1 * sn, cx + r2 * c, cy - r2 * sn);
+            }
+        }
         dc.setPenWidth(1);
 
         var inner = rad - pen;
         var vc = Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER;
 
-        // Nadpis a pod nim cislo verzie. Pozicie sa odvodzuju od vysky pisma,
-        // aby sa verzia nezrazila s velkym cislom skore ani na malych displejoch.
-        var numberY = cy - inner * 0.27;
-        var fx = dc.getFontHeight(Graphics.FONT_XTINY);
-        var digitTop = numberY - dc.getFontHeight(Graphics.FONT_NUMBER_MEDIUM) * 0.36;
-        var versionY = digitTop - fx * 0.55;
-        var titleY = versionY - fx * 0.85;
-        if (titleY < cy - inner * 0.82) {
-            // nadpis by zasahoval do prstenca - posun nadpis aj verziu nizsie
-            titleY = cy - inner * 0.82;
-            versionY = titleY + fx * 0.85;
-        }
         dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(cx, titleY, Graphics.FONT_XTINY, tx("Title"), vc);
-        dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(cx, versionY, Graphics.FONT_XTINY, "v" + tx("AppVersion"), vc);
+        dc.drawText(cx, cy - inner * 0.66, Graphics.FONT_XTINY, tx("Title"), vc);
 
         dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(cx, numberY, Graphics.FONT_NUMBER_MEDIUM,
+        dc.drawText(cx, cy - inner * 0.27, Graphics.FONT_NUMBER_MEDIUM,
             score == null ? "--" : score.format("%d"), vc);
 
         dc.setColor(color, Graphics.COLOR_TRANSPARENT);
@@ -347,8 +360,10 @@ class ReadinessView extends WatchUi.View {
     function drawDetail(dc, w, h, cx, cy) {
         var vc = Graphics.TEXT_JUSTIFY_VCENTER;
         var fh = dc.getFontHeight(Graphics.FONT_XTINY);
-        var rowH = fh * 1.45;
-        var top = cy - rowH * 2.2;
+        var rowH = fh * 1.32;
+        var mor = part("morning");
+        var nRows = (mor != null) ? 5 : 4;
+        var top = cy - rowH * (nRows / 2.0 + 0.2);
 
         dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
         dc.drawText(cx, top, Graphics.FONT_XTINY, tx("Factors"),
@@ -381,10 +396,21 @@ class ReadinessView extends WatchUi.View {
         var xL = cx - w * 0.36;
         var xS = cx + w * 0.02;
         var xV = cx + w * 0.36;
+        var halfScoreW = dc.getTextWidthInPixels("100", Graphics.FONT_XTINY) / 2;
+
+        // Posledny riadok: ranne skore (bez dnesnych treningov), vpravo aktualne skore
+        if (mor != null) {
+            var nowScore = r(_result["score"]);
+            var nowText = nowScore == null ? "" : tx("Now") + " " + nowScore.format("%d");
+            if (dc.getTextWidthInPixels(nowText, Graphics.FONT_XTINY) > xV - xS - halfScoreW - 4) {
+                nowText = nowScore == null ? "" : nowScore.format("%d");
+            }
+            rows.add([tx("Morning"), mor[0], nowText, null]);
+        }
 
         // Plny nazov (Freshness), ak sa zmesti pred stlpec so skore, inak skratka (Fresh)
         var longLabel = tx("FormLong");
-        var room = xS - xL - dc.getTextWidthInPixels("100", Graphics.FONT_XTINY) / 2 - 4;
+        var room = xS - xL - halfScoreW - 4;
         if (dc.getTextWidthInPixels(longLabel, Graphics.FONT_XTINY) <= room) {
             rows[0][0] = longLabel;
         }
@@ -410,7 +436,7 @@ class ReadinessView extends WatchUi.View {
         }
 
         dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(cx, top + rowH * 5.6, Graphics.FONT_XTINY, tx("DetailFooter"),
+        dc.drawText(cx, top + rowH * (rows.size() + 1.6), Graphics.FONT_XTINY, tx("DetailFooter"),
             Graphics.TEXT_JUSTIFY_CENTER | vc);
     }
 
@@ -428,7 +454,7 @@ class ReadinessView extends WatchUi.View {
             return;
         }
 
-        var n = hist.size();
+        var n = hist.size() < 7 ? hist.size() : 7;
         var areaW = w * 0.70;
         var slot = areaW / n;
         var barW = slot * 0.62;
@@ -462,5 +488,67 @@ class ReadinessView extends WatchUi.View {
         dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
         dc.drawLine(left, baseY, left + areaW, baseY);
         dc.drawText(cx, baseY + fh * 1.75, Graphics.FONT_XTINY, tx("DayOfMonth"), vcC);
+    }
+
+    // Historia 30 dni: tenke stlpce (najnovsi vpravo), datumy kazdy 7. den,
+    // pod tym priemer / minimum / maximum rannych skore.
+    function drawMonth(dc, w, h, cx, cy) {
+        var vcC = Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER;
+        var hist = part("hist");
+        var labels = part("histDays");
+        var fh = dc.getFontHeight(Graphics.FONT_XTINY);
+
+        dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(cx, cy - h * 0.30, Graphics.FONT_XTINY, tx("Last30"), vcC);
+
+        if (hist == null || labels == null || hist.size() < 30) {
+            dc.drawText(cx, cy, Graphics.FONT_XTINY, tx("Refresh"), vcC);
+            return;
+        }
+
+        var n = 30;
+        var areaW = w * 0.74;
+        var slot = areaW / n;
+        var barW = slot * 0.7;
+        if (barW < 1) { barW = 1; }
+        var baseY = cy + h * 0.12;
+        var maxH = h * 0.32;
+        var left = cx - areaW / 2;
+
+        var sum = 0.0;
+        var cnt = 0;
+        var mn = null;
+        var mx = null;
+        for (var k = 0; k < n; k++) {
+            var i = n - 1 - k;                // vlavo najstarsi den
+            var sc = r(hist[i]);
+            var x = left + slot * k + slot / 2;
+            if (sc != null) {
+                var bh = maxH * sc / 100.0;
+                if (bh < 2) { bh = 2; }
+                dc.setColor(scoreColor(sc), Graphics.COLOR_TRANSPARENT);
+                dc.fillRectangle(x - barW / 2, baseY - bh, barW, bh);
+                sum += sc;
+                cnt++;
+                if (mn == null || sc < mn) { mn = sc; }
+                if (mx == null || sc > mx) { mx = sc; }
+            }
+            if (i % 7 == 0) {
+                dc.setColor(i == 0 ? Graphics.COLOR_WHITE : Graphics.COLOR_LT_GRAY,
+                    Graphics.COLOR_TRANSPARENT);
+                dc.drawText(x, baseY + fh * 0.65, Graphics.FONT_XTINY, labels[i], vcC);
+            }
+        }
+
+        dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
+        dc.drawLine(left, baseY, left + areaW, baseY);
+
+        if (cnt > 0) {
+            var avg = (sum / cnt + 0.5).toNumber();
+            dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
+            dc.drawText(cx, baseY + fh * 1.75, Graphics.FONT_XTINY,
+                Lang.format(tx("Stats"), [avg.format("%d"), (mn as Number).format("%d"),
+                    (mx as Number).format("%d")]), vcC);
+        }
     }
 }

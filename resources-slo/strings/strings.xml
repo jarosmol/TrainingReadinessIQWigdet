@@ -46,4 +46,8 @@
     <string id="Last7">POSLEDNYCH 7 DNI</string>
     <string id="Refresh">Obnovte data</string>
     <string id="DayOfMonth">den v mesiaci</string>
+    <string id="Morning">Rano</string>
+    <string id="Now">teraz</string>
+    <string id="Last30">POSLEDNYCH 30 DNI</string>
+    <string id="Stats">priem $1$  min $2$  max $3$</string>
 </strings>

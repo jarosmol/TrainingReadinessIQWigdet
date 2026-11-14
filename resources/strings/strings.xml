@@ -46,4 +46,8 @@
     <string id="Last7">LAST 7 DAYS</string>
     <string id="Refresh">Refresh data</string>
     <string id="DayOfMonth">day of month</string>
+    <string id="Morning">Morning</string>
+    <string id="Now">now</string>
+    <string id="Last30">LAST 30 DAYS</string>
+    <string id="Stats">avg $1$  min $2$  max $3$</string>
 </strings>
