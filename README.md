@@ -67,8 +67,9 @@ check *Settings → Connections → Garmin* in intervals.icu.
   When the two differ by more than 2 points, the morning score is shown small and pale after the big number
   (e.g. `66 /87`), the ring shows the difference as a light grey segment, and the factors screen shows freshness
   as *morning ▸ now* with the morning value pale (e.g. `-11 ▸ -43%`).
-- **HRV and resting HR are scored from today's value compared with your 4-week average** (z-score): the factors
-  screen shows e.g. `46 vs 49` (today vs. average).
+- **HRV and resting HR are scored from today's value compared with your 4-week average** (z-score):
+  **85 = your average**, higher = better than usual (lower resting HR / higher HRV), lower = worse.
+  The factors screen shows today's value.
 - **Glance:** on watches with a glance list (e.g. Forerunner 255, Venu 3) the widget shows the last downloaded
   score, morning score and band in the list. The glance does not download data itself – open the widget to refresh.
 - **History (7 and 30 days)** shows each day's **morning** score, back-calculated from intervals.icu data, so it is

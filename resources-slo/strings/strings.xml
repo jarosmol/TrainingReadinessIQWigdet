@@ -38,15 +38,14 @@
     <string id="Rhr">RestHR</string>
     <string id="RhrShort">RHR</string>
     <string id="RhrLong">Resting HR</string>
-    <string id="Vs">vs</string>
     <string id="Hrv">HRV</string>
     <string id="Bb">BB</string>
     <string id="Factors">ZLOZKY SKORE</string>
-    <string id="BodyBat">BodyBat</string>
+    <string id="BodyBat">Body Bat.</string>
     <string id="BodyBatLong">Body Battery</string>
     <string id="NotMeasured">nemeria</string>
     <string id="Max">max</string>
-    <string id="DetailFooter">vs = priemer za 4 tyzdne</string>
+    <string id="DetailFooter">85 = tvoj priemer</string>
     <string id="Last7">POSLEDNYCH 7 DNI</string>
     <string id="Refresh">Obnovte data</string>
     <string id="DayOfMonth">den v mesiaci</string>

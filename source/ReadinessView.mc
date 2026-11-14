@@ -60,7 +60,6 @@ class ReadinessView extends WatchUi.View {
             "RhrShort" => WatchUi.loadResource(Rez.Strings.RhrShort),
             "RhrLong" => WatchUi.loadResource(Rez.Strings.RhrLong),
             "BodyBatLong" => WatchUi.loadResource(Rez.Strings.BodyBatLong),
-            "Vs" => WatchUi.loadResource(Rez.Strings.Vs),
             "Hrv" => WatchUi.loadResource(Rez.Strings.Hrv),
             "Bb" => WatchUi.loadResource(Rez.Strings.Bb),
             "Factors" => WatchUi.loadResource(Rez.Strings.Factors),
@@ -392,16 +391,15 @@ class ReadinessView extends WatchUi.View {
 
         // Riadok: [kratky popis, skore, hodnota, dni v priemere alebo null, dlhy popis]
         // 4. prvok: ak je v priemere (HRV, tep) malo dni, namiesto skore sa ukaze napr. "3d".
-        // HRV a tep: "dnes vs priemer za 4 tyzdne" (napr. "46 vs 49").
-        var vs = " " + tx("Vs") + " ";
+        // HRV a tep: iba dnesna hodnota; skore 85 = vlastny priemer za 4 tyzdne (vysvetlivka v pate).
         var rows = [
             [tx("Form"), form[0], form[1] == null ? "" : signed(form[1]) + "%", null, tx("FormLong")],
             [tx("Hrv"), hrv[0], hrv[1] == null ? tx("NotMeasured") :
-                r(hrv[1]).format("%d") + (hrv[2] == null ? "" : vs + r(hrv[2]).format("%d")),
+                r(hrv[1]).format("%d"),
                 hrv[1] == null ? null : baseDays(hrv), tx("Hrv")],
             [tx("Sleep"), sleep[0], hhmm(sleep[1]), null, tx("Sleep")],
             [tx("Rhr"), rhr[0], rhr[1] == null ? "" :
-                r(rhr[1]).format("%d") + (rhr[2] == null ? "" : vs + r(rhr[2]).format("%d")),
+                r(rhr[1]).format("%d"),
                 rhr[1] == null ? null : baseDays(rhr), tx("RhrLong")]
         ];
 
@@ -466,9 +464,9 @@ class ReadinessView extends WatchUi.View {
     function drawMorningArrow(dc, xRight, y, text) {
         var font = Graphics.FONT_XTINY;
         var fh = dc.getFontHeight(font);
-        var aw = fh * 0.22;
-        var ah = fh * 0.16;
-        var gap = fh * 0.15;
+        var aw = fh * 0.34;
+        var ah = fh * 0.26;
+        var gap = fh * 0.18;
         var ax = xRight - gap - aw;
         dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
         dc.fillPolygon([[ax, y - ah], [ax + aw, y], [ax, y + ah]]);
