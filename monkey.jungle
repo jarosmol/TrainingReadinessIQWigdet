@@ -1,1 +1,9 @@
 project.manifest = manifest.xml
+
+# Cas do zotavenia (RecoveryTime.mc): hodinky bez Complications API pouziju verziu bez neho
+base.excludeAnnotations = norecovery
+vivoactive4.excludeAnnotations = recovery
+vivoactive4s.excludeAnnotations = recovery
+venu2.excludeAnnotations = recovery
+venu2s.excludeAnnotations = recovery
+venu2plus.excludeAnnotations = recovery

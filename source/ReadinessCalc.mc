@@ -9,6 +9,7 @@ import Toybox.Math;
 //   Spanok  20 %  - skore spanku z hodiniek, inak dlzka spanku
 //   Pokojovy tep 15 % - vs. vlastny priemer (vyssi = horsie)
 //   Body Battery 20 % - ranne maximum, IBA ak chyba HRV (napr. Vivoactive 4S)
+//   Zotavenie 15 %  - Garmin recovery time z hodiniek, ktore ho poskytuju (nie VA4S)
 // Ak niektora zlozka chyba (napr. Vivoactive 4S nema HRV), vahy sa prepocitaju
 // medzi dostupne zlozky.
 module ReadinessCalc {
@@ -17,6 +18,7 @@ module ReadinessCalc {
     const W_HRV = 0.30;
     const W_SLEEP = 0.20;
     const W_RHR = 0.15;
+    const W_REC = 0.15;   // cas do zotavenia (Garmin recovery time), iba aktualny den
     const W_BB = 0.20;    // Body Battery iba namiesto HRV (prekryva sa so spankom)
     const BASE_DAYS = 27;     // baseline HRV a tepu = predchadzajucich 27 dni (~4 tyzdne)
     const K_CTL = 0.976472;   // exp(-1/42): denny pokles fitness (intervals.icu)
@@ -167,11 +169,20 @@ module ReadinessCalc {
             [10.0, 40.0, 70.0, 90.0, 100.0]);
     }
 
+    // Cas do zotavenia (hodiny) -> skore. 0 h = plne zotaveny.
+    function recoveryScore(hours) {
+        if (hours == null) { return null; }
+        return interp(hours,
+            [0.0, 6.0, 12.0, 24.0, 36.0, 48.0, 72.0],
+            [100.0, 95.0, 85.0, 65.0, 45.0, 30.0, 10.0]);
+    }
+
     // days: Dictionary "YYYY-MM-DD" -> [hrv, rhr, sleepSecs, sleepScore, ctl, atl] (Float alebo null)
     // keys: datumy od dnes (keys[0]) dozadu.
     // bbPeak: ranne maximum Body Battery z hodiniek (alebo null).
+    // rtNow, rtMorning: cas do zotavenia teraz a rano v hodinach (alebo null).
     // Vrati Dictionary s celkovym skore a zlozkami (vhodne na ulozenie do Storage).
-    function compute(days, keys, bbPeak) {
+    function compute(days, keys, bbPeak, rtNow, rtMorning) {
         var today = keys[0];
         var yest = keys[1];
 
@@ -216,11 +227,15 @@ module ReadinessCalc {
         var sSc = field(days, sDay, 3);
         var sScore = sleepScoreFrom(sSc, sSecs);
 
+        // Cas do zotavenia: aktualny pre aktualne skore, ranny pre ranne
+        var tScore = recoveryScore(rtNow);
+        var tMorning = recoveryScore(rtMorning);
+
         var c = combine([[fScore, W_FORM], [hScore, W_HRV], [bScore, W_BB],
-                         [sScore, W_SLEEP], [rScore, W_RHR]]);
-        // Ranne skore: rovnake zlozky, iba sviezost bez dnesnych treningov
+                         [sScore, W_SLEEP], [rScore, W_RHR], [tScore, W_REC]]);
+        // Ranne skore: rovnake zlozky, iba sviezost a zotavenie bez dnesnych treningov
         var m = combine([[mf[0], W_FORM], [hScore, W_HRV], [bScore, W_BB],
-                         [sScore, W_SLEEP], [rScore, W_RHR]]);
+                         [sScore, W_SLEEP], [rScore, W_RHR], [tMorning, W_REC]]);
 
         return {
             "score" => c[0],
@@ -230,13 +245,14 @@ module ReadinessCalc {
             "hrv" => [hScore, hVal, hMean, hBase.size()],
             "bb" => [bScore, bbPeak],
             "sleep" => [sScore, sSecs, sSc],
-            "rhr" => [rScore, rVal, rMean, rBase.size()]
+            "rhr" => [rScore, rVal, rMean, rBase.size()],
+            "rec" => [tScore, rtNow, rtMorning]
         };
     }
 
     // RANNE skore dna keys[i]: sviezost zo stavu pred treningom toho dna, spanok, HRV
-    // a tep toho dna, baseline z 27 predchadzajucich dni. Body Battery historia nie je
-    // dostupna, preto sa v historii nepouziva.
+    // a tep toho dna, baseline z 27 predchadzajucich dni. Historia Body Battery ani casu
+    // do zotavenia nie je dostupna, preto sa v historii nepouzivaju.
     function dayScore(days, keys, i) {
         var d = keys[i];
         var mf = morningForm(days, keys, i);

@@ -39,6 +39,8 @@
     <string id="Hrv">HRV</string>
     <string id="Bb">BB</string>
     <string id="Factors">ZLOZKY SKORE</string>
+    <string id="Rec">Zotav</string>
+    <string id="RecLong">Zotavenie</string>
     <string id="BodyBat">BodyBat</string>
     <string id="NotMeasured">nemeria</string>
     <string id="Max">max</string>

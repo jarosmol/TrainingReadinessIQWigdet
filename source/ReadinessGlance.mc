@@ -31,6 +31,9 @@ class ReadinessGlance extends WatchUi.GlanceView {
     }
 
     function onUpdate(dc) {
+        // Zapamataj ranny cas do zotavenia (prvy pohlad na glance rano, este pred treningom).
+        RecoveryTime.morning(RecoveryTime.current());
+
         var score = null;
         var morning = null;
         var cached = Application.Storage.getValue("cache");

@@ -61,6 +61,8 @@ class ReadinessView extends WatchUi.View {
             "Bb" => WatchUi.loadResource(Rez.Strings.Bb),
             "Factors" => WatchUi.loadResource(Rez.Strings.Factors),
             "BodyBat" => WatchUi.loadResource(Rez.Strings.BodyBat),
+            "Rec" => WatchUi.loadResource(Rez.Strings.Rec),
+            "RecLong" => WatchUi.loadResource(Rez.Strings.RecLong),
             "NotMeasured" => WatchUi.loadResource(Rez.Strings.NotMeasured),
             "Max" => WatchUi.loadResource(Rez.Strings.Max),
             "DetailFooter" => WatchUi.loadResource(Rez.Strings.DetailFooter),
@@ -359,9 +361,13 @@ class ReadinessView extends WatchUi.View {
     function drawDetail(dc, w, h, cx, cy) {
         var vc = Graphics.TEXT_JUSTIFY_VCENTER;
         var fh = dc.getFontHeight(Graphics.FONT_XTINY);
-        var rowH = fh * 1.32;
         var mor = part("morning");
-        var top = cy - rowH * 2.2;
+        // 5. riadok (zotavenie) iba na hodinkach, ktore cas do zotavenia poskytuju
+        var rec = part("rec");
+        var hasRec = rec != null && rec[1] != null;
+        var rowH = fh * (hasRec ? 1.22 : 1.32);
+        // 5 riadkov: nadpis aj pata vycentrovane, aby sa zmestili do kruhu
+        var top = cy - rowH * (hasRec ? 3.3 : 2.2);
 
         dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
         dc.drawText(cx, top, Graphics.FONT_XTINY, tx("Factors"),
@@ -385,6 +391,17 @@ class ReadinessView extends WatchUi.View {
                 r(rhr[1]).format("%d") + (rhr[2] == null ? "" : "/" + r(rhr[2]).format("%d")),
                 rhr[1] == null ? null : baseDays(rhr)]
         ];
+
+        // Zotavenie: "14h", resp. "30/4h" (teraz / bez dnesneho treningu), ak sa lisia o 2+ h
+        if (hasRec) {
+            var nowH = r(rec[1]) as Number;
+            var recText = nowH.format("%d");
+            var mornH = (rec.size() > 2) ? r(rec[2]) as Number or Null : null;
+            if (mornH != null && (nowH - mornH >= 2 || mornH - nowH >= 2)) {
+                recText += "/" + mornH.format("%d");
+            }
+            rows.add([tx("Rec"), rec[0], recText + "h", null]);
+        }
 
         // Ak sa v skore pouzilo Body Battery (namiesto HRV), ukaz ho v riadku HRV
         if (bb != null && bb[0] != null) {
@@ -410,6 +427,9 @@ class ReadinessView extends WatchUi.View {
         var room = xS - xL - halfScoreW - 4;
         if (dc.getTextWidthInPixels(longLabel, Graphics.FONT_XTINY) <= room) {
             rows[0][0] = longLabel;
+        }
+        if (hasRec && dc.getTextWidthInPixels(tx("RecLong"), Graphics.FONT_XTINY) <= room) {
+            rows[4][0] = tx("RecLong");
         }
         for (var i = 0; i < rows.size(); i++) {
             var y = top + rowH * (i + 1.2);

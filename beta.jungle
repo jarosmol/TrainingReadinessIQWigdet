@@ -1,3 +1,11 @@
 # Beta verzia: iny manifest (ine ID a nazov "BETA"), zvysok projektu je rovnaky.
 # manifest-beta.xml vytvara scripts/export.ps1 z manifest.xml (je v .gitignore).
 project.manifest = manifest-beta.xml
+
+# Cas do zotavenia (RecoveryTime.mc): hodinky bez Complications API pouziju verziu bez neho
+base.excludeAnnotations = norecovery
+vivoactive4.excludeAnnotations = recovery
+vivoactive4s.excludeAnnotations = recovery
+venu2.excludeAnnotations = recovery
+venu2s.excludeAnnotations = recovery
+venu2plus.excludeAnnotations = recovery
