@@ -107,6 +107,9 @@ powershell -ExecutionPolicy Bypass -File scripts\export.ps1 -Only beta   # beta 
 powershell -ExecutionPolicy Bypass -File scripts\export.ps1 -Only public # public only
 ```
 
+Add `-Version 1.0.4` to set the version number shown in the app (`resources/strings/version.xml`, commit it afterwards).
+It must match the version you enter when uploading to the store.
+
 The script refuses to export if `resources/properties/properties.xml` contains a real API key
 (property defaults become the default settings of the store app). All devices listed in `manifest.xml`
 must be downloaded in the SDK Manager. Upload at https://apps-developer.garmin.com.

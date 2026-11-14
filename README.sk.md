@@ -128,6 +128,8 @@ powershell -ExecutionPolicy Bypass -File scripts\export.ps1              # obe v
 powershell -ExecutionPolicy Bypass -File scripts\export.ps1 -Only beta   # len beta
 powershell -ExecutionPolicy Bypass -File scripts\export.ps1 -Only public # len verejna
 ```
+S `-Version 1.0.4` skript nastavi cislo verzie zobrazene v aplikacii (`resources/strings/version.xml`, potom ho commitnite).
+Musi sediet s verziou zadanou pri nahravani do obchodu.
 Subory `.iq` vzniknu v priecinku `export/` (je v `.gitignore`).
 
 ### 3. Nahratie do obchodu

@@ -1,0 +1,7 @@
+<!--
+    Cislo verzie zobrazene na prehlade pod nadpisom. Musi sediet s verziou v Connect IQ obchode.
+    Nastavuje ho scripts\export.ps1 -Version x.y.z (potom subor commitnite).
+-->
+<strings>
+    <string id="AppVersion">1.0.4</string>
+</strings>

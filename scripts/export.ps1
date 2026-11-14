@@ -5,6 +5,7 @@
       powershell -ExecutionPolicy Bypass -File scripts\export.ps1              # verejna aj beta
       powershell -ExecutionPolicy Bypass -File scripts\export.ps1 -Only beta   # len beta
       powershell -ExecutionPolicy Bypass -File scripts\export.ps1 -Only public # len verejna
+      ... -Only public -Version 1.0.4   # nastavi cislo verzie zobrazene v aplikacii
 
   Vystup:
       export\Readiness.iq       -> verejna aplikacia (ID 2de113d6...)
@@ -17,7 +18,8 @@
 param(
     [ValidateSet("all", "public", "beta")]
     [string]$Only = "all",
-    [string]$DeveloperKey = ""
+    [string]$DeveloperKey = "",
+    [string]$Version = ""
 )
 
 $ErrorActionPreference = "Stop"
@@ -42,6 +44,17 @@ $keyValue = $m.Groups[1].Value.Trim()
 if ($keyValue -ne "" -and $keyValue -ne "SEM_VLOZTE_API_KLUC") {
     throw "V $props je API kluc! Pred exportom tam vratte SEM_VLOZTE_API_KLUC (kluc sa zadava v Garmin Connect)."
 }
+
+# --- Cislo verzie (zobrazuje sa v aplikacii, musi sediet s verziou v obchode)
+$versionFile = "resources\strings\version.xml"
+$versionText = Get-Content $versionFile -Raw
+if ($Version) {
+    if ($Version -notmatch '^\d+\.\d+\.\d+$') { throw "Verzia musi byt v tvare x.y.z (napr. 1.0.4)." }
+    $versionText = [regex]::Replace($versionText, '(<string id="AppVersion">)[^<]*(</string>)', "`${1}$Version`${2}")
+    [System.IO.File]::WriteAllText((Join-Path $root $versionFile), $versionText)
+    Write-Host "Nastavil som verziu $Version v $versionFile - nezabudnite ho commitnut."
+}
+$appVersion = [regex]::Match($versionText, '<string id="AppVersion">([^<]*)</string>').Groups[1].Value
 
 # --- 2. Connect IQ SDK a developer key
 $ciq = Join-Path $env:APPDATA "Garmin\ConnectIQ"
@@ -125,4 +138,5 @@ if ($Only -ne "public") {
 
 Write-Host ""
 Write-Host "Hotovo. Subory su v priecinku export\"
+Write-Host "Verzia v aplikacii: $appVersion  -> rovnaku zadajte pri nahravani do obchodu."
 Get-ChildItem "export\*.iq" | ForEach-Object { Write-Host ("  " + $_.Name + "  (" + [math]::Round($_.Length / 1KB) + " kB)") }

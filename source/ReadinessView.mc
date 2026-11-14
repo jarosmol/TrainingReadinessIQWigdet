@@ -24,6 +24,7 @@ class ReadinessView extends WatchUi.View {
         View.initialize();
         _t = {
             "Title" => WatchUi.loadResource(Rez.Strings.Title),
+            "AppVersion" => WatchUi.loadResource(Rez.Strings.AppVersion),
             "LblPrime" => WatchUi.loadResource(Rez.Strings.LblPrime),
             "LblHigh" => WatchUi.loadResource(Rez.Strings.LblHigh),
             "LblModerate" => WatchUi.loadResource(Rez.Strings.LblModerate),
@@ -264,11 +265,25 @@ class ReadinessView extends WatchUi.View {
         var inner = rad - pen;
         var vc = Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER;
 
+        // Nadpis a pod nim cislo verzie. Pozicie sa odvodzuju od vysky pisma,
+        // aby sa verzia nezrazila s velkym cislom skore ani na malych displejoch.
+        var numberY = cy - inner * 0.27;
+        var fx = dc.getFontHeight(Graphics.FONT_XTINY);
+        var digitTop = numberY - dc.getFontHeight(Graphics.FONT_NUMBER_MEDIUM) * 0.36;
+        var versionY = digitTop - fx * 0.55;
+        var titleY = versionY - fx * 0.85;
+        if (titleY < cy - inner * 0.82) {
+            // nadpis by zasahoval do prstenca - posun nadpis aj verziu nizsie
+            titleY = cy - inner * 0.82;
+            versionY = titleY + fx * 0.85;
+        }
         dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(cx, cy - inner * 0.66, Graphics.FONT_XTINY, tx("Title"), vc);
+        dc.drawText(cx, titleY, Graphics.FONT_XTINY, tx("Title"), vc);
+        dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(cx, versionY, Graphics.FONT_XTINY, "v" + tx("AppVersion"), vc);
 
         dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(cx, cy - inner * 0.27, Graphics.FONT_NUMBER_MEDIUM,
+        dc.drawText(cx, numberY, Graphics.FONT_NUMBER_MEDIUM,
             score == null ? "--" : score.format("%d"), vc);
 
         dc.setColor(color, Graphics.COLOR_TRANSPARENT);
