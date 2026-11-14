@@ -52,8 +52,10 @@ Na priemer (baseline) HRV a tepu treba aspon 7 dni dat za posledne 4 tyzdne. Kym
 - **Aktualne a ranne skore.** Velke cislo je *aktualne* skore: po treningu intervals.icu zvysi unavu, sviezost
   klesne a s nou aj skore. *Ranne* skore pouziva sviezost pred dnesnym treningom (vcerajsie fitness a unava
   znizene o jeden den rovnako ako v intervals.icu), ostatne zlozky su rovnake. Ak sa lisia o viac ako 2 body,
-  ranne skore sa ukaze male a bledo za velkym cislom (napr. `66 /87`) a na obrazovke so zlozkami je sviezost
-  v tvare *aktualna / ranna* (napr. `-43/-11%`).
+  ranne skore sa ukaze male a bledo za velkym cislom (napr. `66 /87`), rozdiel je na prstenci svetlosivy
+  a na obrazovke so zlozkami je sviezost v tvare *rano ▸ teraz* s rannou hodnotou bledo (napr. `-11 ▸ -43%`).
+- **HRV a pokojovy tep sa hodnotia podla dnesnej hodnoty v porovnani s vasim priemerom za 4 tyzdne** (z-skore):
+  na obrazovke so zlozkami napr. `46 vs 49` (dnes vs priemer).
 - **Glance:** na hodinkach so zoznamom glances (napr. Forerunner 255, Venu 3) widget ukazuje v zozname posledne
   stiahnute skore, ranne skore a pasmo. Glance sam data nestahuje – na obnovenie otvorte widget.
 - **Historia (7 aj 30 dni)** ukazuje **ranne** skore kazdeho dna, spatne dopocitane z dat intervals.icu, takze je

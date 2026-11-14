@@ -65,7 +65,10 @@ check *Settings → Connections → Garmin* in intervals.icu.
   freshness drops and so does the score. The *morning* score uses freshness from before today's training
   (yesterday's fitness and fatigue decayed by one day, as intervals.icu does); all other factors are the same.
   When the two differ by more than 2 points, the morning score is shown small and pale after the big number
-  (e.g. `66 /87`), and the factors screen shows freshness as *current / morning* (e.g. `-43/-11%`).
+  (e.g. `66 /87`), the ring shows the difference as a light grey segment, and the factors screen shows freshness
+  as *morning ▸ now* with the morning value pale (e.g. `-11 ▸ -43%`).
+- **HRV and resting HR are scored from today's value compared with your 4-week average** (z-score): the factors
+  screen shows e.g. `46 vs 49` (today vs. average).
 - **Glance:** on watches with a glance list (e.g. Forerunner 255, Venu 3) the widget shows the last downloaded
   score, morning score and band in the list. The glance does not download data itself – open the widget to refresh.
 - **History (7 and 30 days)** shows each day's **morning** score, back-calculated from intervals.icu data, so it is
@@ -138,7 +141,7 @@ Store texts, icon and screenshots are in `store/`.
 | *Phone not connected* | watch not connected to the phone / Garmin Connect not running |
 | *Response too large* | low memory – in `DataFetcher.mc` lower `CHUNK_DAYS` to 4 and raise `CHUNKS` to 7 |
 | *Invalid response* (−400) | incomplete or unexpected data from intervals.icu – try again later |
-| Sleep / RestHR `--` | last night has not synced from Garmin Connect to intervals.icu yet |
+| Sleep / RHR `--` | last night has not synced from Garmin Connect to intervals.icu yet |
 
 ---
 

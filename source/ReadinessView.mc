@@ -57,6 +57,10 @@ class ReadinessView extends WatchUi.View {
             "Sleep" => WatchUi.loadResource(Rez.Strings.Sleep),
             "SleepShort" => WatchUi.loadResource(Rez.Strings.SleepShort),
             "Rhr" => WatchUi.loadResource(Rez.Strings.Rhr),
+            "RhrShort" => WatchUi.loadResource(Rez.Strings.RhrShort),
+            "RhrLong" => WatchUi.loadResource(Rez.Strings.RhrLong),
+            "BodyBatLong" => WatchUi.loadResource(Rez.Strings.BodyBatLong),
+            "Vs" => WatchUi.loadResource(Rez.Strings.Vs),
             "Hrv" => WatchUi.loadResource(Rez.Strings.Hrv),
             "Bb" => WatchUi.loadResource(Rez.Strings.Bb),
             "Factors" => WatchUi.loadResource(Rez.Strings.Factors),
@@ -256,10 +260,27 @@ class ReadinessView extends WatchUi.View {
         if (pen < 6) { pen = 6; }
         var rad = w / 2 - pen / 2 - 3;
 
+        // ranne skore (bez dnesnych treningov), ak je o viac ako 2 body vyssie
+        var mor = part("morning");
+        var ms = (mor != null) ? r(mor[0]) as Number or Null : null;
+        var showMorning = ms != null && score != null && (ms - score > 2 || score - ms > 2);
+
         // prstenec: siva stopa + farebny obluk podla skore
         dc.setPenWidth(pen);
         dc.setColor(0x333333, Graphics.COLOR_TRANSPARENT);
         dc.drawCircle(cx, cy, rad);
+        // co dnesny trening "zobral": svetlosivy obluk az po ranne skore, farebny cez neho
+        if (showMorning && (ms as Number) > score) {
+            var m = ms as Number;
+            dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
+            if (m >= 100) {
+                dc.drawCircle(cx, cy, rad);
+            } else {
+                var mEnd = 90 - (360 * m / 100);
+                if (mEnd < 0) { mEnd += 360; }
+                dc.drawArc(cx, cy, rad, Graphics.ARC_CLOCKWISE, 90, mEnd);
+            }
+        }
         if (score != null && score > 0) {
             dc.setColor(color, Graphics.COLOR_TRANSPARENT);
             if (score >= 100) {
@@ -285,17 +306,13 @@ class ReadinessView extends WatchUi.View {
 
         // Ranne skore (bez dnesnych treningov) za lomitkom, male a blede -
         // iba ak sa od aktualneho lisi o viac ako 2 body (po treningu)
-        var mor = part("morning");
-        if (mor != null && score != null) {
-            var ms = r(mor[0]);
-            if (ms != null && (ms - score > 2 || score - ms > 2)) {
-                var numW = dc.getTextWidthInPixels(scoreText, Graphics.FONT_NUMBER_MEDIUM);
-                var digitH = dc.getFontHeight(Graphics.FONT_NUMBER_MEDIUM) * 0.62;
-                dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
-                dc.drawText(cx + numW / 2 + 3, numberY + digitH / 2 - dc.getFontHeight(Graphics.FONT_XTINY) / 2,
-                    Graphics.FONT_XTINY, "/" + ms.format("%d"),
-                    Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
-            }
+        if (showMorning) {
+            var numW = dc.getTextWidthInPixels(scoreText, Graphics.FONT_NUMBER_MEDIUM);
+            var digitH = dc.getFontHeight(Graphics.FONT_NUMBER_MEDIUM) * 0.62;
+            dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
+            dc.drawText(cx + numW / 2 + 3, numberY + digitH / 2 - dc.getFontHeight(Graphics.FONT_XTINY) / 2,
+                Graphics.FONT_XTINY, "/" + (ms as Number).format("%d"),
+                Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
         }
 
         dc.setColor(color, Graphics.COLOR_TRANSPARENT);
@@ -320,7 +337,7 @@ class ReadinessView extends WatchUi.View {
             hrvText = tx("Bb") + " " + r(bb[1]).format("%d");
         }
         var line2 = hrvText
-                  + gap + tx("Rhr") + " " + (rhr[1] == null ? "--" : r(rhr[1]).format("%d"));
+                  + gap + tx("RhrShort") + " " + (rhr[1] == null ? "--" : r(rhr[1]).format("%d"));
 
         dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
         drawSleepLine(dc, cx, cy + inner * 0.40, line1, hhmm(sleep[1]));
@@ -373,43 +390,47 @@ class ReadinessView extends WatchUi.View {
         var rhr = _result["rhr"];
         var bb = part("bb");
 
-        // 4. stlpec: pocet dni v priemere (HRV, tep) - ak ich je malo, namiesto
-        // skore sa zobrazi napr. "3d" (zbiera sa baseline)
+        // Riadok: [kratky popis, skore, hodnota, dni v priemere alebo null, dlhy popis]
+        // 4. prvok: ak je v priemere (HRV, tep) malo dni, namiesto skore sa ukaze napr. "3d".
+        // HRV a tep: "dnes vs priemer za 4 tyzdne" (napr. "46 vs 49").
+        var vs = " " + tx("Vs") + " ";
         var rows = [
-            [tx("Form"), form[0], form[1] == null ? "" : signed(form[1]) + "%", null],
+            [tx("Form"), form[0], form[1] == null ? "" : signed(form[1]) + "%", null, tx("FormLong")],
             [tx("Hrv"), hrv[0], hrv[1] == null ? tx("NotMeasured") :
-                r(hrv[1]).format("%d") + (hrv[2] == null ? "" : "/" + r(hrv[2]).format("%d")),
-                hrv[1] == null ? null : baseDays(hrv)],
-            [tx("Sleep"), sleep[0], hhmm(sleep[1]), null],
+                r(hrv[1]).format("%d") + (hrv[2] == null ? "" : vs + r(hrv[2]).format("%d")),
+                hrv[1] == null ? null : baseDays(hrv), tx("Hrv")],
+            [tx("Sleep"), sleep[0], hhmm(sleep[1]), null, tx("Sleep")],
             [tx("Rhr"), rhr[0], rhr[1] == null ? "" :
-                r(rhr[1]).format("%d") + (rhr[2] == null ? "" : "/" + r(rhr[2]).format("%d")),
-                rhr[1] == null ? null : baseDays(rhr)]
+                r(rhr[1]).format("%d") + (rhr[2] == null ? "" : vs + r(rhr[2]).format("%d")),
+                rhr[1] == null ? null : baseDays(rhr), tx("RhrLong")]
         ];
 
         // Ak sa v skore pouzilo Body Battery (namiesto HRV), ukaz ho v riadku HRV
         if (bb != null && bb[0] != null) {
-            rows[1] = [tx("BodyBat"), bb[0], tx("Max") + " " + r(bb[1]).format("%d"), null];
+            rows[1] = [tx("BodyBat"), bb[0], tx("Max") + " " + r(bb[1]).format("%d"), null,
+                tx("BodyBatLong")];
         }
 
         var xL = cx - w * 0.36;
         var xS = cx + w * 0.02;
-        var xV = cx + w * 0.36;
+        var xV = cx + w * 0.38;
         var halfScoreW = dc.getTextWidthInPixels("100", Graphics.FONT_XTINY) / 2;
 
-        // Sviezost: aktualna / ranna (pred dnesnym treningom), ak sa lisia
+        // Sviezost rano -> teraz: "-30 > -68%" (ranna bledo, sipka), ak sa lisia
+        var mornFresh = null;
         if (mor != null && form[1] != null && mor.size() > 1 && mor[1] != null) {
-            var nowPct = r(form[1]);
-            var mornPct = r(mor[1]);
-            if (nowPct != mornPct) {
-                rows[0][2] = signed(form[1]) + "/" + signed(mor[1]) + "%";
+            if (r(form[1]) != r(mor[1])) {
+                mornFresh = signed(mor[1]);
             }
         }
 
-        // Plny nazov (Freshness), ak sa zmesti pred stlpec so skore, inak skratka (Fresh)
-        var longLabel = tx("FormLong");
+        // Plne nazvy (Freshness, Resting HR, Body Battery), ak sa zmestia pred stlpec
+        // so skore, inak skratky
         var room = xS - xL - halfScoreW - 4;
-        if (dc.getTextWidthInPixels(longLabel, Graphics.FONT_XTINY) <= room) {
-            rows[0][0] = longLabel;
+        for (var j = 0; j < rows.size(); j++) {
+            if (dc.getTextWidthInPixels(rows[j][4] as String, Graphics.FONT_XTINY) <= room) {
+                rows[j][0] = rows[j][4];
+            }
         }
         for (var i = 0; i < rows.size(); i++) {
             var y = top + rowH * (i + 1.2);
@@ -430,11 +451,28 @@ class ReadinessView extends WatchUi.View {
                 Graphics.TEXT_JUSTIFY_CENTER | vc);
             dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
             dc.drawText(xV, y, Graphics.FONT_XTINY, rows[i][2], Graphics.TEXT_JUSTIFY_RIGHT | vc);
+            if (i == 0 && mornFresh != null) {
+                drawMorningArrow(dc, xV - dc.getTextWidthInPixels(rows[i][2] as String, Graphics.FONT_XTINY),
+                    y, mornFresh as String);
+            }
         }
 
         dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
         dc.drawText(cx, top + rowH * (rows.size() + 1.6), Graphics.FONT_XTINY, tx("DetailFooter"),
             Graphics.TEXT_JUSTIFY_CENTER | vc);
+    }
+
+    // Pred hodnotou (konci na xRight): "<ranna hodnota> >" - ranna bledo, sipka ako trojuholnik.
+    function drawMorningArrow(dc, xRight, y, text) {
+        var font = Graphics.FONT_XTINY;
+        var fh = dc.getFontHeight(font);
+        var aw = fh * 0.22;
+        var ah = fh * 0.16;
+        var gap = fh * 0.15;
+        var ax = xRight - gap - aw;
+        dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
+        dc.fillPolygon([[ax, y - ah], [ax + aw, y], [ax, y + ah]]);
+        dc.drawText(ax - gap, y, font, text, Graphics.TEXT_JUSTIFY_RIGHT | Graphics.TEXT_JUSTIFY_VCENTER);
     }
 
     // Historia: skore za poslednych 7 dni ako stlpcovy graf (najnovsi vpravo).
