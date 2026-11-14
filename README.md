@@ -49,7 +49,7 @@ check *Settings → Connections → Garmin* in intervals.icu.
 | **Sleep** | 20 % | watch | sleep score; if missing, sleep duration (8 h = 100, 6 h = 65) |
 | **Resting HR** | 15 % | watch | higher than your baseline = worse |
 | **Body Battery** | 20 % | read on the watch | **only when HRV is missing** (e.g. vivoactive 4S): morning peak since midnight, 85 = 90, 70 = 70, 50 = 40 |
-| **Recovery** | 15 % | Garmin recovery time from the watch | only watches that provide it to Connect IQ (Forerunner, fenix, epix, Venu 3, vivoactive 5); 0 h = 100, 12 h = 85, 24 h = 65, 36 h = 45, 48 h = 30, 72 h = 10 |
+| **Recovery** | 15 % | Garmin recovery time from the watch | only watches that provide it to Connect IQ (Forerunner, fenix, epix; not Venu 3 or vivoactive 5); 0 h = 100, 12 h = 85, 24 h = 65, 36 h = 45, 48 h = 30, 72 h = 10 |
 
 - **Freshness** is what intervals.icu calls *Form*: fitness (~6-week training load) minus fatigue (~7-day load),
   shown as % of fitness. **Positive = rested, negative = tired from recent training.** −23 % means fatigue is
@@ -57,12 +57,12 @@ check *Settings → Connections → Garmin* in intervals.icu.
   but it lowers today's readiness for another hard session.
 - Body Battery is **never combined with HRV** – Garmin derives it partly from HRV, so using both would count recovery twice.
   The morning peak is used (not the current value), so the score does not drop during the day. Between midnight and 5:00 the last known morning peak (yesterday's) is used.
-- **Recovery** is Garmin recovery time. Watches with Physio TrueUp (e.g. Venu 3, Forerunner 255) include rides
+- **Recovery** is Garmin recovery time. Watches with Physio TrueUp (e.g. Forerunner 255) include rides
   recorded on an Edge, but not activities uploaded directly from apps (MyWhoosh, Rouvy) – those only show up in
   freshness from intervals.icu. The morning score uses recovery time without today's training: the first reading of
   the day (widget or glance) is counted down 1 h per hour, so a workout that raises it does not change the morning
   score. If neither the widget nor the glance is opened before training, the morning value already includes it.
-  Not used on vivoactive 4/4S and Venu 2 (not available to Connect IQ there).
+  Not used on vivoactive 4/4S/5 and Venu 2/3 (not available to Connect IQ there).
 - Watch stress is intentionally not used: Garmin derives it from HRV, which is already in the score, and it fluctuates during the day.
 - Missing factors are skipped and the weights are re-normalised.
 - HRV and resting HR need at least **7 days** of data in the last 4 weeks. Until then the factor is skipped and the
@@ -166,6 +166,6 @@ source/ReadinessView.mc         drawing, cache, error messages, history chart
 source/ReadinessDelegate.mc     input (buttons / touch)
 source/DataFetcher.mc           downloads 63 days of intervals.icu wellness data in 7-day chunks, reads Body Battery
 source/ReadinessGlance.mc       glance (row in the glance list)
-source/RecoveryTime.mc          recovery time from the watch (Complications API)
+source/RecoveryTime.mc          recovery time from the watch (ActivityMonitor)
 source/ReadinessCalc.mc         score calculation (weights and thresholds at the top)
 ```
