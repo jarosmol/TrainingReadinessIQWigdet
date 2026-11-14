@@ -159,9 +159,7 @@ class DataFetcher {
         for (var k = 0; k < CHUNKS * CHUNK_DAYS; k++) {
             keys.add(dateStr(k));
         }
-        var rtNow = RecoveryTime.current();
-        var result = ReadinessCalc.compute(_days, keys, readBodyBatteryPeak(),
-            rtNow, RecoveryTime.morning(rtNow));
+        var result = ReadinessCalc.compute(_days, keys, readBodyBatteryPeak());
         var hist = ReadinessCalc.history(_days, keys, HISTORY_DAYS);
         hist[0] = result["morning"][0];   // historia = ranne skore
         var labels = [];

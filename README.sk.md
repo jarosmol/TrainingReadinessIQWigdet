@@ -27,7 +27,6 @@ Na Forerunneri 255 sa widget ovlada tlacidlami: **START** prepina obrazovky, **p
 | **Spanok** | 20 % | hodinky | skore spanku; ak chyba, dlzka spanku (8 h = 100 b., 6 h = 65 b.) |
 | **Pokojovy tep** | 15 % | hodinky | vyssi ako vas priemer = horsie |
 | **Body Battery** | 20 % | priamo z hodiniek | **iba ak chyba HRV** (napr. Vivoactive 4S): ranne maximum Body Battery od polnoci, 85 = 90 b., 70 = 70 b., 50 = 40 b. |
-| **Zotavenie** | 15 % | Garmin cas do zotavenia z hodiniek | iba hodinky, ktore ho poskytuju cez Connect IQ (Forerunner, fenix, epix, Venu 3, vivoactive 5 ho neposkytuju); 0 h = 100 b., 12 h = 85 b., 24 h = 65 b., 36 h = 45 b., 48 h = 30 b., 72 h = 10 b. |
 
 **Sviezost** je to, co intervals.icu nazyva *Form*: fitness (zataz za ~6 tyzdnov) minus unava (zataz za ~7 dni),
 v % z fitness. **Kladna = oddychnuty, zaporna = unaveny z posledneho treningu.** −23 % znamena, ze unava je
@@ -38,14 +37,6 @@ Body Battery sa nikdy nepouzije spolu s HRV, lebo Garmin ho z HRV pocita a islo 
 zapocitanie. Pouziva sa ranne maximum (nie aktualna hodnota), aby skore cez den neklesalo.
 Medzi polnocou a 5:00 sa pouzije posledne zname ranne maximum (vcerajsie). Hodinky so starsim Connect IQ ho nemusia poskytovat,
 vtedy sa jednoducho vynecha.
-
-**Zotavenie** je Garmin recovery time. Hodinky s Physio TrueUp (napr. Forerunner 255) don zapocitaju
-aj jazdy z Edge, nie vsak aktivity nahrane priamo z aplikacii (MyWhoosh, Rouvy) – tie vidi iba sviezost z intervals.icu.
-Pre ranne skore sa pouzije cas do zotavenia bez dnesneho treningu: prva hodnota dna (z widgetu alebo glance)
-sa odpocitava 1 h za hodinu, takze ak ju trening zvysi, ranne skore to neovplyvni. Ak widget ani glance
-v dany den pred treningom neotvorite, ranne skore uz dnesny trening obsahuje.
-Na Vivoactive 4/4S, Venu 2/3 a vivoactive 5 sa nepouziva (Connect IQ ho tam neposkytuje).
-Stres z hodiniek sa zamerne nepouziva: Garmin ho pocita z HRV, ktora uz v skore je, a cez den silno kolise.
 
 Ak niektora zlozka chyba, vahy sa automaticky prepocitaju. **Vivoactive 4S HRV nemeria**,
 takze skore sa pocita z formy, spanku a tepu. Po prechode na Venu 3S sa HRV zapocita samo,
@@ -62,12 +53,12 @@ Na priemer (baseline) HRV a tepu treba aspon 7 dni dat za posledne 4 tyzdne. Kym
   klesne a s nou aj skore. *Ranne* skore pouziva sviezost pred dnesnym treningom (vcerajsie fitness a unava
   znizene o jeden den rovnako ako v intervals.icu), ostatne zlozky su rovnake. Ak sa lisia o viac ako 2 body,
   ranne skore sa ukaze male a bledo za velkym cislom (napr. `66 /87`) a na obrazovke so zlozkami je sviezost
-  v tvare *aktualna / ranna* (napr. `-43/-11%`), podobne zotavenie (napr. `30/4h`).
+  v tvare *aktualna / ranna* (napr. `-43/-11%`).
 - **Glance:** na hodinkach so zoznamom glances (napr. Forerunner 255, Venu 3) widget ukazuje v zozname posledne
   stiahnute skore, ranne skore a pasmo. Glance sam data nestahuje – na obnovenie otvorte widget.
 - **Historia (7 aj 30 dni)** ukazuje **ranne** skore kazdeho dna, spatne dopocitane z dat intervals.icu, takze je
   hned k dispozicii a nezavisi od toho, kedy ste v ten den trenovali. Pri minulych dnoch sa nepouziva
-  Body Battery ani cas do zotavenia (hodinky ich historiu neuchovavaju). Obrazovka 30 dni ukazuje aj priemer, minimum a maximum.
+  Body Battery (hodinky jeho historiu neuchovavaju). Obrazovka 30 dni ukazuje aj priemer, minimum a maximum.
 - Widget stahuje 63 dni dat (30 dni historie + 4-tyzdnovy baseline); HRV a tep sa vzdy porovnavaju
   s predchadzajucimi 4 tyzdnami.
 - Cislo verzie je na obrazovke nacitavania.
@@ -221,7 +212,5 @@ source/ReadinessApp.mc          vstupny bod aplikacie
 source/ReadinessView.mc         kreslenie obrazovky, cache, chybove hlasenia
 source/ReadinessDelegate.mc     ovladanie (tlacidla / dotyk)
 source/DataFetcher.mc           stahovanie 63 dni dat z intervals.icu po 7-dnovych castiach
-source/ReadinessGlance.mc       glance (riadok v zozname glances)
-source/RecoveryTime.mc          cas do zotavenia z hodiniek (ActivityMonitor)
 source/ReadinessCalc.mc         vypocet skore (vahy a pasma sa daju upravit hore v subore)
 ```
