@@ -10,12 +10,13 @@
       export\Readiness.iq       -> verejna aplikacia (ID 2de113d6...)
       export\Readiness-beta.iq  -> beta aplikacia    (ID fd723a7f..., nazov "... BETA")
 
-  Developer key: predvolene Dokumenty\garmin\developer_key, inak -DeveloperKey <cesta>.
+  Developer key: -DeveloperKey <cesta>, inak cesta z nastaveni VS Code (Monkey C: Developer Key Path),
+  inak Dokumenty\garmin\developer_key. Aktualizacie v obchode musia byt podpisane TYM ISTYM klucom.
 #>
 param(
     [ValidateSet("all", "public", "beta")]
     [string]$Only = "all",
-    [string]$DeveloperKey = (Join-Path $env:USERPROFILE "Documents\garmin\developer_key")
+    [string]$DeveloperKey = ""
 )
 
 $ErrorActionPreference = "Stop"
@@ -55,8 +56,23 @@ $monkeyc = Join-Path $sdk "bin\monkeyc.bat"
 if (-not (Test-Path $monkeyc)) {
     throw "Nenasiel som Connect IQ SDK ($monkeyc). Nastavte aktivne SDK v SDK Manageri."
 }
+if (-not $DeveloperKey) {
+    # 1) nastavenie rozsirenia Monkey C vo VS Code (monkeyC.developerKeyPath)
+    $vsSettings = Join-Path $env:APPDATA "Code\User\settings.json"
+    if (Test-Path $vsSettings) {
+        $mk = [regex]::Match((Get-Content $vsSettings -Raw), '"monkeyC\.developerKeyPath"\s*:\s*"([^"]+)"')
+        if ($mk.Success) {
+            $DeveloperKey = $mk.Groups[1].Value.Replace('\\', '\')
+            Write-Host "Developer key z nastaveni VS Code: $DeveloperKey"
+        }
+    }
+}
+if (-not $DeveloperKey) {
+    # 2) predvolene umiestnenie
+    $DeveloperKey = Join-Path $env:USERPROFILE "Documents\garmin\developer_key"
+}
 if (-not (Test-Path $DeveloperKey)) {
-    throw "Nenasiel som developer key: $DeveloperKey. Spustite s -DeveloperKey <cesta>."
+    throw "Nenasiel som developer key: $DeveloperKey. Spustite s -DeveloperKey <cesta>. Pouzite ten isty kluc ako pri predoslej verzii v obchode."
 }
 Write-Host "SDK: $sdk"
 
