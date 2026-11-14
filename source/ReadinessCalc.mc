@@ -225,7 +225,7 @@ module ReadinessCalc {
         return {
             "score" => c[0],
             "n" => c[1],
-            "morning" => [m[0], mf[1]],
+            "morning" => [m[0], mf[1], mf[0]],   // ranne skore, ranna sviezost %, jej skore
             "form" => [fScore, fPct],
             "hrv" => [hScore, hVal, hMean, hBase.size()],
             "bb" => [bScore, bbPeak],

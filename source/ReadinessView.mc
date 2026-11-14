@@ -62,7 +62,8 @@ class ReadinessView extends WatchUi.View {
             "RhrShort" => WatchUi.loadResource(Rez.Strings.RhrShort),
             "RhrLong" => WatchUi.loadResource(Rez.Strings.RhrLong),
             "BodyBatLong" => WatchUi.loadResource(Rez.Strings.BodyBatLong),
-            "MornLbl" => WatchUi.loadResource(Rez.Strings.MornLbl),
+            "MornShort" => WatchUi.loadResource(Rez.Strings.MornShort),
+            "MornLong" => WatchUi.loadResource(Rez.Strings.MornLong),
             "Hrv" => WatchUi.loadResource(Rez.Strings.Hrv),
             "Bb" => WatchUi.loadResource(Rez.Strings.Bb),
             "Factors" => WatchUi.loadResource(Rez.Strings.Factors),
@@ -405,17 +406,16 @@ class ReadinessView extends WatchUi.View {
         var mor = part("morning");
         var form = _result["form"];
 
-        // Ranna sviezost (pred dnesnym treningom), ak sa lisi od aktualnej -
-        // pod sviezostou bledo "rano -30%"
-        var mornFresh = null;
-        if (mor != null && form[1] != null && mor.size() > 1 && mor[1] != null) {
+        // Ranna sviezost (pred dnesnym treningom) - samostatny bledy riadok nad zlozkami,
+        // iba ak sa lisi od aktualnej (po treningu)
+        var mornRow = null;
+        if (mor != null && form[1] != null && mor.size() > 2 && mor[1] != null && mor[2] != null) {
             if (r(form[1]) != r(mor[1])) {
-                mornFresh = tx("MornLbl") + " " + signed(mor[1]) + "%";
+                mornRow = [tx("MornShort"), mor[2], signed(mor[1]) + "%", null, tx("MornLong"), true];
             }
         }
-        var subH = (mornFresh != null) ? dc.getFontHeight(_small) * 0.85 : 0;
         // s riadkom navyse mierne hustejsie, aby sa vsetko zmestilo aj na Vivoactive 4S
-        var rowH = fh * ((mornFresh != null) ? 1.18 : 1.32);
+        var rowH = fh * ((mornRow != null) ? 1.18 : 1.32);
 
         // nadpis na rovnakom mieste a rovnakym pismom ako na strankach s historiou
         var top = cy - h * 0.30;
@@ -440,12 +440,18 @@ class ReadinessView extends WatchUi.View {
             [tx("Rhr"), rhr[0], rhr[1] == null ? "" :
                 r(rhr[1]).format("%d"),
                 rhr[1] == null ? null : baseDays(rhr), tx("RhrLong")]
-        ];
+        ] as Array<Array>;
 
         // Ak sa v skore pouzilo Body Battery (namiesto HRV), ukaz ho v riadku HRV
         if (bb != null && bb[0] != null) {
             rows[1] = [tx("BodyBat"), bb[0], tx("Max") + " " + r(bb[1]).format("%d"), null,
                 tx("BodyBatLong")];
+        }
+
+        if (mornRow != null) {
+            var all = [mornRow] as Array<Array>;
+            all.addAll(rows);
+            rows = all;
         }
 
         var xL = cx - w * 0.36;
@@ -463,9 +469,10 @@ class ReadinessView extends WatchUi.View {
         }
         var y = top;
         for (var i = 0; i < rows.size(); i++) {
-            y = top + rowH * (i + 1.2) + (i > 0 ? subH : 0);
+            y = top + rowH * (i + 1.2);
             var sc = r(rows[i][1]);
-            dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
+            var pale = rows[i].size() > 5;   // ranna sviezost
+            dc.setColor(pale ? Graphics.COLOR_DK_GRAY : Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
             dc.drawText(xL, y, _rowFont, rows[i][0], Graphics.TEXT_JUSTIFY_LEFT | vc);
             var scText = "--";
             if (sc != null) {
@@ -476,16 +483,11 @@ class ReadinessView extends WatchUi.View {
                     scText = days.format("%d") + "d";
                 }
             }
-            dc.setColor(scoreColor(sc), Graphics.COLOR_TRANSPARENT);
+            dc.setColor(pale ? Graphics.COLOR_DK_GRAY : scoreColor(sc), Graphics.COLOR_TRANSPARENT);
             dc.drawText(xS, y, _rowFont, scText,
                 Graphics.TEXT_JUSTIFY_CENTER | vc);
-            dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
+            dc.setColor(pale ? Graphics.COLOR_DK_GRAY : Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
             dc.drawText(xV, y, _rowFont, rows[i][2], Graphics.TEXT_JUSTIFY_RIGHT | vc);
-            if (i == 0 && mornFresh != null) {
-                dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
-                dc.drawText(xV, y + fh * 0.48 + subH * 0.3, _small, mornFresh as String,
-                    Graphics.TEXT_JUSTIFY_RIGHT | vc);
-            }
         }
 
         dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);

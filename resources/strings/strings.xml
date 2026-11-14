@@ -43,7 +43,8 @@
     <string id="Factors">SCORE FACTORS</string>
     <string id="BodyBat">Body Bat.</string>
     <string id="BodyBatLong">Body Battery</string>
-    <string id="MornLbl">morning</string>
+    <string id="MornShort">Morning</string>
+    <string id="MornLong">Morning fresh</string>
     <string id="NotMeasured">n/a</string>
     <string id="Max">max</string>
     <string id="DetailFooter">85 = your average</string>
