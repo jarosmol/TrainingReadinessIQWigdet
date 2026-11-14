@@ -1,1 +1,6 @@
 project.manifest = manifest.xml
+
+# Vektorove pismo (mensie spodne popisky na AMOLED): hodinky s Connect IQ 3.x ho nemaju
+base.excludeAnnotations = novector
+vivoactive4.excludeAnnotations = vector
+vivoactive4s.excludeAnnotations = vector

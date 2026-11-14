@@ -20,6 +20,7 @@ class ReadinessView extends WatchUi.View {
     var _errorCode = 0;
     var _page = 0;                  // 0 prehlad, 1 zlozky, 2 historia 7 dni, 3 historia 30 dni
     var _t;                         // nacitane texty v jazyku hodiniek
+    var _small = null;              // mensie pismo pre spodne popisky (vid smallFont)
 
     function initialize() {
         View.initialize();
@@ -205,6 +206,26 @@ class ReadinessView extends WatchUi.View {
 
     // ---------- kreslenie ----------
 
+    // Mensie pismo na spodne popisky. Na AMOLED displejoch s vysokym rozlisenim
+    // (Venu 3, Forerunner 265...) je FONT_XTINY velke, preto sa tam pouzije vektorove
+    // pismo asi o 25 % mensie. Inde (a na hodinkach bez vektorovych pisiem) FONT_XTINY.
+    (:vector)
+    function smallFont(dc, w) {
+        var base = Graphics.FONT_XTINY;
+        if (w < 360 || !(Graphics has :getVectorFont)) { return base; }
+        var size = (dc.getFontHeight(base) * 0.75).toNumber();
+        var f = Graphics.getVectorFont({
+            :face => ["RobotoCondensedRegular", "RobotoRegular", "RobotoCondensedBold"],
+            :size => size
+        });
+        return f != null ? f : base;
+    }
+
+    (:novector)
+    function smallFont(dc, w) {
+        return Graphics.FONT_XTINY;
+    }
+
     function onUpdate(dc) {
         dc.setColor(Graphics.COLOR_TRANSPARENT, Graphics.COLOR_BLACK);
         dc.clear();
@@ -213,6 +234,7 @@ class ReadinessView extends WatchUi.View {
         var w = dc.getWidth();
         var h = dc.getHeight();
         var cx = w / 2;
+        if (_small == null) { _small = smallFont(dc, w); }
         var cy = h / 2;
 
         if (_status == :nokey) {
@@ -343,7 +365,7 @@ class ReadinessView extends WatchUi.View {
         dc.drawText(cx, cy + inner * 0.60, Graphics.FONT_XTINY, line2, vc);
 
         dc.setColor(_status == :error ? 0xFFAA00 : Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(cx, cy + inner * 0.82, Graphics.FONT_XTINY, footerText(), vc);
+        dc.drawText(cx, cy + inner * 0.82, _small, footerText(), vc);
     }
 
     // Riadok "<prefix> [mesiac] <cas spanku>" vycentrovany na cx.
@@ -456,7 +478,7 @@ class ReadinessView extends WatchUi.View {
         }
 
         dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(cx, top + rowH * (rows.size() + 1.6), Graphics.FONT_XTINY, tx("DetailFooter"),
+        dc.drawText(cx, top + rowH * (rows.size() + 1.6), _small, tx("DetailFooter"),
             Graphics.TEXT_JUSTIFY_CENTER | vc);
     }
 
@@ -517,12 +539,12 @@ class ReadinessView extends WatchUi.View {
 
             dc.setColor(idx == 0 ? Graphics.COLOR_WHITE : Graphics.COLOR_LT_GRAY,
                 Graphics.COLOR_TRANSPARENT);
-            dc.drawText(x, baseY + fh * 0.65, Graphics.FONT_XTINY, labels[idx], vcC);
+            dc.drawText(x, baseY + fh * 0.65, _small, labels[idx], vcC);
         }
 
         dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
         dc.drawLine(left, baseY, left + areaW, baseY);
-        dc.drawText(cx, baseY + fh * 1.75, Graphics.FONT_XTINY, tx("DayOfMonth"), vcC);
+        dc.drawText(cx, baseY + fh * 1.75, _small, tx("DayOfMonth"), vcC);
     }
 
     // Historia 30 dni: tenke stlpce (najnovsi vpravo), datumy kazdy 7. den,
@@ -571,7 +593,7 @@ class ReadinessView extends WatchUi.View {
             if (i % 7 == 0) {
                 dc.setColor(i == 0 ? Graphics.COLOR_WHITE : Graphics.COLOR_LT_GRAY,
                     Graphics.COLOR_TRANSPARENT);
-                dc.drawText(x, baseY + fh * 0.65, Graphics.FONT_XTINY, labels[i], vcC);
+                dc.drawText(x, baseY + fh * 0.65, _small, labels[i], vcC);
             }
         }
 
@@ -581,7 +603,7 @@ class ReadinessView extends WatchUi.View {
         if (cnt > 0) {
             var avg = (sum / cnt + 0.5).toNumber();
             dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(cx, baseY + fh * 1.75, Graphics.FONT_XTINY,
+            dc.drawText(cx, baseY + fh * 1.75, _small,
                 Lang.format(tx("Stats"), [avg.format("%d"), (mn as Number).format("%d"),
                     (mx as Number).format("%d")]), vcC);
         }

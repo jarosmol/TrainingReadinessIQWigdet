@@ -1,3 +1,8 @@
 # Beta verzia: iny manifest (ine ID a nazov "BETA"), zvysok projektu je rovnaky.
 # manifest-beta.xml vytvara scripts/export.ps1 z manifest.xml (je v .gitignore).
 project.manifest = manifest-beta.xml
+
+# Vektorove pismo (mensie spodne popisky na AMOLED): hodinky s Connect IQ 3.x ho nemaju
+base.excludeAnnotations = novector
+vivoactive4.excludeAnnotations = vector
+vivoactive4s.excludeAnnotations = vector
