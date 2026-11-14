@@ -21,6 +21,7 @@ class ReadinessView extends WatchUi.View {
     var _page = 0;                  // 0 prehlad, 1 zlozky, 2 historia 7 dni, 3 historia 30 dni
     var _t;                         // nacitane texty v jazyku hodiniek
     var _small = null;              // mensie pismo pre spodne popisky (vid smallFont)
+    var _rowFont = null;            // pismo riadkov so zlozkami (na AMOLED mierne mensie)
 
     function initialize() {
         View.initialize();
@@ -210,10 +211,10 @@ class ReadinessView extends WatchUi.View {
     // (Venu 3, Forerunner 265...) je FONT_XTINY velke, preto sa tam pouzije vektorove
     // pismo asi o 25 % mensie. Inde (a na hodinkach bez vektorovych pisiem) FONT_XTINY.
     (:vector)
-    function smallFont(dc, w) {
+    function smallFont(dc, w, scale) {
         var base = Graphics.FONT_XTINY;
         if (w < 360 || !(Graphics has :getVectorFont)) { return base; }
-        var size = (dc.getFontHeight(base) * 0.75).toNumber();
+        var size = (dc.getFontHeight(base) * scale).toNumber();
         var f = Graphics.getVectorFont({
             :face => ["RobotoCondensedRegular", "RobotoRegular", "RobotoCondensedBold"],
             :size => size
@@ -222,7 +223,7 @@ class ReadinessView extends WatchUi.View {
     }
 
     (:novector)
-    function smallFont(dc, w) {
+    function smallFont(dc, w, scale) {
         return Graphics.FONT_XTINY;
     }
 
@@ -234,7 +235,10 @@ class ReadinessView extends WatchUi.View {
         var w = dc.getWidth();
         var h = dc.getHeight();
         var cx = w / 2;
-        if (_small == null) { _small = smallFont(dc, w); }
+        if (_small == null) {
+            _small = smallFont(dc, w, 0.75);
+            _rowFont = smallFont(dc, w, 0.82);
+        }
         var cy = h / 2;
 
         if (_status == :nokey) {
@@ -396,13 +400,13 @@ class ReadinessView extends WatchUi.View {
     // Detail: skore kazdej zlozky (0-100) a jej hodnota.
     function drawDetail(dc, w, h, cx, cy) {
         var vc = Graphics.TEXT_JUSTIFY_VCENTER;
-        var fh = dc.getFontHeight(Graphics.FONT_XTINY);
+        var fh = dc.getFontHeight(_rowFont);
         var rowH = fh * 1.32;
         var mor = part("morning");
         var top = cy - rowH * 2.2;
 
         dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(cx, top, Graphics.FONT_XTINY, tx("Factors"),
+        dc.drawText(cx, top, _rowFont, tx("Factors"),
             Graphics.TEXT_JUSTIFY_CENTER | vc);
 
         var form = _result["form"];
@@ -434,7 +438,7 @@ class ReadinessView extends WatchUi.View {
         var xL = cx - w * 0.36;
         var xS = cx + w * 0.02;
         var xV = cx + w * 0.38;
-        var halfScoreW = dc.getTextWidthInPixels("100", Graphics.FONT_XTINY) / 2;
+        var halfScoreW = dc.getTextWidthInPixels("100", _rowFont) / 2;
 
         // Sviezost rano -> teraz: "-30 > -68%" (ranna bledo, sipka), ak sa lisia
         var mornFresh = null;
@@ -448,7 +452,7 @@ class ReadinessView extends WatchUi.View {
         // so skore, inak skratky
         var room = xS - xL - halfScoreW - 4;
         for (var j = 0; j < rows.size(); j++) {
-            if (dc.getTextWidthInPixels(rows[j][4] as String, Graphics.FONT_XTINY) <= room) {
+            if (dc.getTextWidthInPixels(rows[j][4] as String, _rowFont) <= room) {
                 rows[j][0] = rows[j][4];
             }
         }
@@ -456,7 +460,7 @@ class ReadinessView extends WatchUi.View {
             var y = top + rowH * (i + 1.2);
             var sc = r(rows[i][1]);
             dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(xL, y, Graphics.FONT_XTINY, rows[i][0], Graphics.TEXT_JUSTIFY_LEFT | vc);
+            dc.drawText(xL, y, _rowFont, rows[i][0], Graphics.TEXT_JUSTIFY_LEFT | vc);
             var scText = "--";
             if (sc != null) {
                 scText = sc.format("%d");
@@ -467,13 +471,13 @@ class ReadinessView extends WatchUi.View {
                 }
             }
             dc.setColor(scoreColor(sc), Graphics.COLOR_TRANSPARENT);
-            dc.drawText(xS, y, Graphics.FONT_XTINY, scText,
+            dc.drawText(xS, y, _rowFont, scText,
                 Graphics.TEXT_JUSTIFY_CENTER | vc);
             dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(xV, y, Graphics.FONT_XTINY, rows[i][2], Graphics.TEXT_JUSTIFY_RIGHT | vc);
+            dc.drawText(xV, y, _rowFont, rows[i][2], Graphics.TEXT_JUSTIFY_RIGHT | vc);
             if (i == 0 && mornFresh != null) {
-                drawMorningArrow(dc, xV - dc.getTextWidthInPixels(rows[i][2] as String, Graphics.FONT_XTINY),
-                    y, mornFresh as String);
+                drawMorningArrow(dc, xV - dc.getTextWidthInPixels(rows[i][2] as String, _rowFont),
+                    y, mornFresh as String, _rowFont);
             }
         }
 
@@ -483,8 +487,7 @@ class ReadinessView extends WatchUi.View {
     }
 
     // Pred hodnotou (konci na xRight): "<ranna hodnota> >" - ranna bledo, sipka ako trojuholnik.
-    function drawMorningArrow(dc, xRight, y, text) {
-        var font = Graphics.FONT_XTINY;
+    function drawMorningArrow(dc, xRight, y, text, font) {
         var fh = dc.getFontHeight(font);
         var aw = fh * 0.34;
         var ah = fh * 0.26;
