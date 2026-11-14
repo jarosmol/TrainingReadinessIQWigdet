@@ -11,7 +11,8 @@
       export\Readiness-beta.iq  -> beta aplikacia    (ID fd723a7f..., nazov "... BETA")
 
   Developer key: -DeveloperKey <cesta>, inak cesta z nastaveni VS Code (Monkey C: Developer Key Path),
-  inak Dokumenty\garmin\developer_key. Aktualizacie v obchode musia byt podpisane TYM ISTYM klucom.
+  inak Dokumenty\garmin\developer_key. Aktualizacie v obchode musia byt podpisane TYM ISTYM klucom -
+  skript to overi podla odtlacku v scripts\developer_key.sha256 a s inym klucom export zastavi.
 #>
 param(
     [ValidateSet("all", "public", "beta")]
@@ -73,6 +74,23 @@ if (-not $DeveloperKey) {
 }
 if (-not (Test-Path $DeveloperKey)) {
     throw "Nenasiel som developer key: $DeveloperKey. Spustite s -DeveloperKey <cesta>. Pouzite ten isty kluc ako pri predoslej verzii v obchode."
+}
+
+# Kontrola, ze je to TEN ISTY kluc, ktorym je podpisana aplikacia v obchode.
+# scripts\developer_key.sha256 obsahuje odtlacok (SHA-256) suboru s klucom - z neho sa
+# kluc odvodit neda, preto moze byt v gite. Pri prvom spusteni sa odtlacok vytvori.
+$fpFile = Join-Path $root "scripts\developer_key.sha256"
+$keyHash = (Get-FileHash -Algorithm SHA256 $DeveloperKey).Hash
+if (Test-Path $fpFile) {
+    $expected = (Get-Content $fpFile -Raw).Trim()
+    if ($keyHash -ne $expected) {
+        throw "Developer key $DeveloperKey NIE JE ten, ktorym je podpisana aplikacia v obchode (iny odtlacok). Zadajte spravny kluc cez -DeveloperKey <cesta>."
+    }
+    Write-Host "Developer key overeny: $DeveloperKey"
+} else {
+    [System.IO.File]::WriteAllText($fpFile, $keyHash)
+    Write-Host "Ulozil som odtlacok developer key do scripts\developer_key.sha256 - commitnite ho do gitu."
+    Write-Host "POZOR: odtlacok musi patrit klucu, ktorym je podpisana aplikacia v obchode."
 }
 Write-Host "SDK: $sdk"
 
