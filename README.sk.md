@@ -12,7 +12,9 @@ Odskusane: vivoactive 4S (hodinky aj simulator), Forerunner 255 Music (simulator
 
 Na Forerunneri 255 sa widget ovlada tlacidlami: **START** prepina obrazovky, **podrzanie UP** (menu) obnovi data.
 
-![nahlad](nahlad.png)
+| Prehlad | Zlozky skore | Poslednych 7 dni |
+|---|---|---|
+| ![prehlad](store/1_prehlad.png) | ![zlozky](store/2_zlozky.png) | ![historia](store/3_historia.png) |
 
 ---
 
