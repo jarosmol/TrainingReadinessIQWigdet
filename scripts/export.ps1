@@ -45,6 +45,11 @@ if ($keyValue -ne "" -and $keyValue -ne "SEM_VLOZTE_API_KLUC") {
     throw "V $props je API kluc! Pred exportom tam vratte SEM_VLOZTE_API_KLUC (kluc sa zadava v Garmin Connect)."
 }
 
+# --- Posun datumu na screenshoty (DataFetcher.mc) musi byt pred exportom 0
+if ((Get-Content "source\DataFetcher.mc" -Raw) -notmatch 'var debugShiftDays = 0;') {
+    throw "V source\DataFetcher.mc je debugShiftDays iny nez 0 (posun datumu na screenshoty). Pred exportom nastavte 0."
+}
+
 # --- Cislo verzie (zobrazuje sa v aplikacii, musi sediet s verziou v obchode)
 $versionFile = "resources\strings\version.xml"
 $versionText = Get-Content $versionFile -Raw

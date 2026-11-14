@@ -68,8 +68,12 @@ class DataFetcher {
         return _busy;
     }
 
+    // Iba na screenshoty v simulatore: posunie "dnes" o N dni dozadu (napr. 1 = vcera,
+    // ak vcera bol trening). Pred exportom musi byt 0 - export.ps1 to kontroluje.
+    // (static funkcia nevidi konstanty triedy, preto je hodnota priamo tu)
     static function dateStr(daysAgo) {
-        var t = Time.now().subtract(new Time.Duration(daysAgo * 86400));
+        var debugShiftDays = 0;
+        var t = Time.now().subtract(new Time.Duration((daysAgo + debugShiftDays) * 86400));
         var i = Gregorian.info(t, Time.FORMAT_SHORT);
         return i.year.format("%04d") + "-" + i.month.format("%02d") + "-" + i.day.format("%02d");
     }
@@ -164,8 +168,9 @@ class DataFetcher {
         hist[0] = result["morning"][0];   // historia = ranne skore
         var labels = [];
         for (var k = 0; k < HISTORY_DAYS; k++) {
-            var t = Time.now().subtract(new Time.Duration(k * 86400));
-            labels.add(Gregorian.info(t, Time.FORMAT_SHORT).day.format("%d"));
+            // den v mesiaci z rovnakeho datumu ako data (vratane posunu pre screenshoty)
+            var ds = dateStr(k) as String;
+            labels.add((ds.substring(8, 10).toNumber() as Number).format("%d"));
         }
         result.put("hist", hist);
         result.put("histDays", labels);
