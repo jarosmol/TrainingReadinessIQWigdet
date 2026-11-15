@@ -14,7 +14,7 @@ fatigue from every activity you upload.
 |---|---|---|
 | ![overview](store/1_prehlad.png) | ![factors](store/2_zlozky.png) | ![history](store/3_historia.png) |
 
-*(Screenshots show the Slovak UI; the widget uses English on watches set to English.)*
+*(Screenshots from Forerunner 265 in English; the widget uses Slovak on watches set to Slovak.)*
 
 Supported watches (round displays only): **vivoactive 4/4S/5, Venu 2/2S/2 Plus/3/3S,
 Forerunner 165/255/265/955/965 (incl. S and Music), fenix 7/7S/7X, epix 2** – see `manifest.xml`.
