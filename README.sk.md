@@ -64,7 +64,7 @@ Na priemer (baseline) HRV a tepu treba aspon 7 dni dat za posledne 4 tyzdne. Kym
   Body Battery (hodinky jeho historiu neuchovavaju). Obrazovka 30 dni ukazuje aj priemer, minimum a maximum.
 - Widget stahuje 63 dni dat (30 dni historie + 4-tyzdnovy baseline); HRV a tep sa vzdy porovnavaju
   s predchadzajucimi 4 tyzdnami.
-- Cislo verzie je na obrazovke nacitavania.
+- Cislo verzie je drobne nad nadpisom prehladu.
 - **Podrzanie (menu)** – vynutene obnovenie dat.
 - Data sa pri otvoreni widgetu obnovia automaticky, ak su starsie ako 30 minut.
 
