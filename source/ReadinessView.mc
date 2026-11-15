@@ -612,7 +612,8 @@ class ReadinessView extends WatchUi.View {
 
         if (cnt > 0) {
             var avg = (sum / cnt + 0.5).toNumber();
-            dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
+            // rovnaka farba ako ostatne spodne popisky
+            dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
             dc.drawText(cx, baseY + fh * 1.75, _small,
                 Lang.format(tx("Stats"), [avg.format("%d"), (mn as Number).format("%d"),
                     (mx as Number).format("%d")]), vcC);
