@@ -77,7 +77,7 @@ check *Settings → Connections → Garmin* in intervals.icu.
   (the watch does not keep its history). The 30-day screen also shows average, minimum and maximum.
 - The widget downloads 63 days of wellness data (30 days of history + 4-week baseline); HRV and resting HR are
   always compared with the previous 4 weeks.
-- The app version is shown on the loading screen.
+- The app version is shown small above the title on the overview.
 
 All weights and thresholds are at the top of `source/ReadinessCalc.mc`.
 

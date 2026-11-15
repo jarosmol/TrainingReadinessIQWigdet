@@ -202,8 +202,7 @@ class ReadinessView extends WatchUi.View {
     }
 
     function footerText() {
-        // pocas nacitavania aj verzia (uvodna obrazovka sa pri ulozenych datach neukaze)
-        if (_status == :loading) { return tx("Loading") + "  v" + tx("AppVersion"); }
+        if (_status == :loading) { return tx("Loading"); }
         if (_status == :error) { return errorText(); }
         return ageText();
     }
@@ -253,10 +252,6 @@ class ReadinessView extends WatchUi.View {
                 drawMessage(dc, cx, cy, errorText(), tx("Retry1"), tx("Retry2"));
             } else {
                 drawMessage(dc, cx, cy, tx("Load1"), tx("Load2"), tx("Load3"));
-                var fhs = dc.getFontHeight(Graphics.FONT_SMALL);
-                dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
-                dc.drawText(cx, cy + fhs * 1.9, Graphics.FONT_XTINY, "v" + tx("AppVersion"),
-                    Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
             }
             return;
         }
@@ -326,6 +321,10 @@ class ReadinessView extends WatchUi.View {
 
         dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
         dc.drawText(cx, cy - inner * 0.66, Graphics.FONT_XTINY, tx("Title"), vc);
+        // cislo verzie drobne nad nadpisom
+        dc.setColor(0x555555, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(cx, cy - inner * 0.66 - dc.getFontHeight(Graphics.FONT_XTINY) * 0.85, _small,
+            "v" + tx("AppVersion"), vc);
 
         var scoreText = score == null ? "--" : score.format("%d");
         var numberY = cy - inner * 0.27;
