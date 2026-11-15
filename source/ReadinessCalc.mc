@@ -235,9 +235,10 @@ module ReadinessCalc {
     }
 
     // RANNE skore dna keys[i]: sviezost zo stavu pred treningom toho dna, spanok, HRV
-    // a tep toho dna, baseline z 27 predchadzajucich dni. Body Battery historia nie je
-    // dostupna, preto sa v historii nepouziva.
-    function dayScore(days, keys, i) {
+    // a tep toho dna, baseline z 27 predchadzajucich dni.
+    // bbPeak: ranne maximum Body Battery toho dna (ulozene widgetom alebo z historie
+    // senzorov hodiniek), alebo null - pouzije sa rovnako ako dnes, iba ak chyba HRV.
+    function dayScore(days, keys, i, bbPeak) {
         var d = keys[i];
         var mf = morningForm(days, keys, i);
         var hScore = hrvScore(field(days, d, 0),
@@ -245,16 +246,18 @@ module ReadinessCalc {
         var rScore = rhrScore(field(days, d, 1),
             baselineWindow(days, keys, i + 1, i + 1 + BASE_DAYS, null, 1));
         var sScore = sleepScoreFrom(field(days, d, 3), field(days, d, 2));
-        return combine([[mf[0], W_FORM], [hScore, W_HRV],
+        var bScore = (hScore == null) ? bodyBatteryScore(bbPeak) : null;
+        return combine([[mf[0], W_FORM], [hScore, W_HRV], [bScore, W_BB],
                         [sScore, W_SLEEP], [rScore, W_RHR]])[0];
     }
 
     // Ranne skore za poslednych n dni: index 0 = dnes. Dnesok doplni volajuci
     // rannym skore z compute() (s nahradnymi hodnotami z vcera a Body Battery).
-    function history(days, keys, n) {
+    // bbPeaks: Dictionary datum -> ranne maximum Body Battery (moze byt prazdny).
+    function history(days, keys, n, bbPeaks) {
         var out = [];
         for (var i = 0; i < n; i++) {
-            out.add(dayScore(days, keys, i));
+            out.add(dayScore(days, keys, i, bbPeaks.get(keys[i])));
         }
         return out;
     }

@@ -74,8 +74,9 @@ check *Settings → Connections → Garmin* in intervals.icu.
 - **Glance:** on watches with a glance list (e.g. Forerunner 255, Venu 3) the widget shows the last downloaded
   score, morning score and band in the list. The glance does not download data itself – open the widget to refresh.
 - **History (7 and 30 days)** shows each day's **morning** score, back-calculated from intervals.icu data, so it is
-  available immediately and not affected by the time of day you trained. Past days do not use Body Battery
-  (the watch does not keep its history). The 30-day screen also shows average, minimum and maximum.
+  available immediately and not affected by the time of day you trained. On watches without HRV, past days use the
+  morning Body Battery peak that the widget stored that day (the watch itself keeps only a few days of Body Battery
+  history, which is used for days the widget has not stored), so a day's bar matches the morning score you saw. The 30-day screen also shows average, minimum and maximum.
 - The widget downloads 63 days of wellness data (30 days of history + 4-week baseline); HRV and resting HR are
   always compared with the previous 4 weeks.
 - The app version is shown small above the title on the overview.

@@ -59,8 +59,62 @@ class DataFetcher {
         var p = peak.toFloat();
         if (period == secs) {
             Application.Storage.setValue("bbPeak", { "d" => today, "v" => p });
+            DataFetcher.saveBbHistory(today, p);
         }
         return p;
+    }
+
+    // Historia rannych maxim Body Battery (datum -> hodnota) pre 7- a 30-dnovu historiu.
+    // Hodinky si historiu Body Battery drzia len par dni, preto si widget kazde dnesne
+    // ranne maximum ulozi (poslednych 31 dni).
+    static function saveBbHistory(date, value) {
+        var h = Application.Storage.getValue("bbHist");
+        var out = {};
+        for (var k = 0; k < 31; k++) {
+            var key = DataFetcher.dateStr(k);
+            if (h instanceof Lang.Dictionary && h.hasKey(key)) { out.put(key, h[key]); }
+        }
+        out.put(date, value);
+        Application.Storage.setValue("bbHist", out);
+    }
+
+    // Ulozene ranne maxima doplnene o tie, ktore este pamataju hodinky (posledne 3 dni,
+    // maximum od polnoci do 12:00). Vdaka tomu ma Body Battery aj vcerajsi den v historii,
+    // hoci ho widget vtedy este neukladal.
+    static function bodyBatteryPeaks() {
+        var out = {};
+        var h = Application.Storage.getValue("bbHist");
+        if (h instanceof Lang.Dictionary) { out = h; }
+        if (!(Toybox has :SensorHistory)) { return out; }
+        if (!(Toybox.SensorHistory has :getBodyBatteryHistory)) { return out; }
+        var it = Toybox.SensorHistory.getBodyBatteryHistory({
+            :period => new Time.Duration(3 * 86400)
+        });
+        if (it == null) { return out; }
+        var today = DataFetcher.dateStr(0);
+        var found = {};
+        var sample = it.next();
+        while (sample != null) {
+            var v = sample.data;
+            var when = sample.when;
+            if (v != null && when != null) {
+                var g = Gregorian.info(when, Time.FORMAT_SHORT);
+                if ((g.hour as Number) < 12) {
+                    var key = (g.year as Number).format("%04d") + "-" +
+                        (g.month as Number).format("%02d") + "-" + (g.day as Number).format("%02d");
+                    var cur = found.get(key) as Float or Null;
+                    if (cur == null || v > cur) { found.put(key, v.toFloat()); }
+                }
+            }
+            sample = it.next();
+        }
+        // dnesok riesi readBodyBatteryPeak; ulozene hodnoty maju prednost
+        var fk = found.keys();
+        for (var i = 0; i < fk.size(); i++) {
+            var key = fk[i] as String;
+            if (!key.equals(today) && !out.hasKey(key)) { out.put(key, found[key]); }
+        }
+        return out;
     }
 
     var _busy = false;
@@ -164,7 +218,7 @@ class DataFetcher {
             keys.add(dateStr(k));
         }
         var result = ReadinessCalc.compute(_days, keys, readBodyBatteryPeak());
-        var hist = ReadinessCalc.history(_days, keys, HISTORY_DAYS);
+        var hist = ReadinessCalc.history(_days, keys, HISTORY_DAYS, bodyBatteryPeaks());
         hist[0] = result["morning"][0];   // historia = ranne skore
         var labels = [];
         for (var k = 0; k < HISTORY_DAYS; k++) {

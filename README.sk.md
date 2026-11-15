@@ -60,8 +60,9 @@ Na priemer (baseline) HRV a tepu treba aspon 7 dni dat za posledne 4 tyzdne. Kym
 - **Glance:** na hodinkach so zoznamom glances (napr. Forerunner 255, Venu 3) widget ukazuje v zozname posledne
   stiahnute skore, ranne skore a pasmo. Glance sam data nestahuje – na obnovenie otvorte widget.
 - **Historia (7 aj 30 dni)** ukazuje **ranne** skore kazdeho dna, spatne dopocitane z dat intervals.icu, takze je
-  hned k dispozicii a nezavisi od toho, kedy ste v ten den trenovali. Pri minulych dnoch sa nepouziva
-  Body Battery (hodinky jeho historiu neuchovavaju). Obrazovka 30 dni ukazuje aj priemer, minimum a maximum.
+  hned k dispozicii a nezavisi od toho, kedy ste v ten den trenovali. Na hodinkach bez HRV sa pri minulych
+  dnoch pouzije ranne maximum Body Battery, ktore si widget v ten den ulozil (hodinky samy drzia historiu Body
+  Battery len par dni - z nej sa doplnia dni, ktore widget neulozil), takze stlpec sedi s rannym skore, ktore ste videli. Obrazovka 30 dni ukazuje aj priemer, minimum a maximum.
 - Widget stahuje 63 dni dat (30 dni historie + 4-tyzdnovy baseline); HRV a tep sa vzdy porovnavaju
   s predchadzajucimi 4 tyzdnami.
 - Cislo verzie je drobne nad nadpisom prehladu.
