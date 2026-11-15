@@ -12,6 +12,7 @@ class ReadinessView extends WatchUi.View {
 
     const CACHE_KEY = "cache";
     const STALE_SECS = 1800;        // data starsie ako 30 min sa pri otvoreni obnovia
+    const STALE_SECS_AM = 600;      // dopoludnia 10 min: Garmin rano posiela predbezny pokojovy tep
 
     var _fetcher;
     var _result = null;             // posledny vypocet (Dictionary)
@@ -101,7 +102,9 @@ class ReadinessView extends WatchUi.View {
         // cache zo starsej verzie widgetu (bez historie) sa obnovi hned
         var h = part("hist") as Array or Null;
         var complete = h != null && h.size() >= 30;
-        if (!force && _result != null && complete && age < STALE_SECS) { return; }
+        // do 12:00 sa obnovuje castejsie, aby sa predbezny ranny pokojovy tep rychlo nahradil
+        var stale = (Time.now().value() - Time.today().value() < 12 * 3600) ? STALE_SECS_AM : STALE_SECS;
+        if (!force && _result != null && complete && age < stale) { return; }
         _status = :loading;
         WatchUi.requestUpdate();
         _fetcher.start(method(:onData));

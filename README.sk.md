@@ -66,7 +66,8 @@ Na priemer (baseline) HRV a tepu treba aspon 7 dni dat za posledne 4 tyzdne. Kym
   s predchadzajucimi 4 tyzdnami.
 - Cislo verzie je drobne nad nadpisom prehladu.
 - **Podrzanie (menu)** – vynutene obnovenie dat.
-- Data sa pri otvoreni widgetu obnovia automaticky, ak su starsie ako 30 minut.
+- Data sa pri otvoreni widgetu obnovia automaticky, ak su starsie ako 30 minut (dopoludnia 10 minut – Garmin rano
+  niekedy posle predbezny pokojovy tep a az neskor ho opravi).
 
 ---
 

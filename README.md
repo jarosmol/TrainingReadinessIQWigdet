@@ -36,7 +36,8 @@ check *Settings → Connections → Garmin* in intervals.icu.
 ### Controls
 - **Tap / START** – cycles screens: **overview → score factors → last 7 days → last 30 days**.
 - **Hold / menu** – forces a data refresh.
-- Data refreshes automatically when the widget is opened and the data is older than 30 minutes.
+- Data refreshes automatically when the widget is opened and the data is older than 30 minutes
+  (10 minutes before noon – Garmin may first send a provisional resting HR in the morning and correct it later).
 
 ---
 
