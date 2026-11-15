@@ -202,7 +202,8 @@ class ReadinessView extends WatchUi.View {
     }
 
     function footerText() {
-        if (_status == :loading) { return tx("Loading"); }
+        // pocas nacitavania aj verzia (uvodna obrazovka sa pri ulozenych datach neukaze)
+        if (_status == :loading) { return tx("Loading") + "  v" + tx("AppVersion"); }
         if (_status == :error) { return errorText(); }
         return ageText();
     }
