@@ -48,7 +48,8 @@ Pasma a farby ako Garmin Training Readiness: **95+ Vynikajuca** (fialova), 75–
 Na priemer (baseline) HRV a tepu treba aspon 7 dni dat za posledne 4 tyzdne. Kym ich nie je dost, zlozka sa vynecha a v detaile sa namiesto skore ukaze pocet dni, napr. `3d`.
 
 ### Ovladanie
-- **Stlacenie / klepnutie** – prepina obrazovky: **prehlad → zlozky skore → historia 7 dni → historia 30 dni**.
+- **Stlacenie / klepnutie** – prepina obrazovky: **prehlad → zlozky skore → historia 7 dni → historia 30 dni**;
+  na hodinkach s tlacidlami (napr. Forerunner) aj **DOWN / UP** (dalsia / predchadzajuca obrazovka).
 - **Aktualne a ranne skore.** Velke cislo je *aktualne* skore: po treningu intervals.icu zvysi unavu, sviezost
   klesne a s nou aj skore. *Ranne* skore pouziva sviezost pred dnesnym treningom (vcerajsie fitness a unava
   znizene o jeden den rovnako ako v intervals.icu), ostatne zlozky su rovnake. Ak sa lisia o viac ako 2 body,

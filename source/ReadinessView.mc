@@ -96,6 +96,11 @@ class ReadinessView extends WatchUi.View {
         WatchUi.requestUpdate();
     }
 
+    function prevPage() {
+        _page = (_page + 3) % 4;
+        WatchUi.requestUpdate();
+    }
+
     function refresh(force) {
         if (_fetcher.isBusy()) { return; }
         var age = Time.now().value() - _fetchedAt;
