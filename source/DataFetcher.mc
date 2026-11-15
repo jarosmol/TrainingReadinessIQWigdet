@@ -30,6 +30,7 @@ class DataFetcher {
         var today = DataFetcher.dateStr(0);
         var secs = Time.now().value() - Time.today().value();
         // (staticka funkcia nevidi konstanty triedy, preto priamo hodnota)
+        var period = secs;
         if (secs < 5 * 3600) {
             var stored = Application.Storage.getValue("bbPeak");
             if (stored instanceof Lang.Dictionary) {
@@ -40,10 +41,11 @@ class DataFetcher {
                     return v;
                 }
             }
-            return null;
+            // nic ulozene (napr. po vymazani dat) - maximum za poslednych 24 h
+            period = 24 * 3600;
         }
         var it = Toybox.SensorHistory.getBodyBatteryHistory({
-            :period => new Time.Duration(secs)
+            :period => new Time.Duration(period)
         });
         if (it == null) { return null; }
         var peak = null;
@@ -55,7 +57,9 @@ class DataFetcher {
         }
         if (peak == null) { return null; }
         var p = peak.toFloat();
-        Application.Storage.setValue("bbPeak", { "d" => today, "v" => p });
+        if (period == secs) {
+            Application.Storage.setValue("bbPeak", { "d" => today, "v" => p });
+        }
         return p;
     }
 

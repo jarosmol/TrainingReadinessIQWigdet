@@ -360,8 +360,9 @@ class ReadinessView extends WatchUi.View {
         // Body Battery sa zobrazi namiesto HRV, ak sa pouzilo v skore
         var bb = part("bb");
         var hrvText = tx("Hrv") + " " + (hrv[1] == null ? "--" : r(hrv[1]).format("%d"));
-        if (bb != null && bb[0] != null) {
-            hrvText = tx("Bb") + " " + r(bb[1]).format("%d");
+        // hodinky bez HRV (alebo HRV dnes chyba): namiesto "HRV --" Body Battery
+        if ((bb != null && bb[0] != null) || hrv[1] == null) {
+            hrvText = tx("Bb") + " " + ((bb == null || bb[1] == null) ? "--" : r(bb[1]).format("%d"));
         }
         var line2 = hrvText
                   + gap + tx("RhrShort") + " " + (rhr[1] == null ? "--" : r(rhr[1]).format("%d"));
@@ -443,8 +444,11 @@ class ReadinessView extends WatchUi.View {
         ] as Array<Array>;
 
         // Ak sa v skore pouzilo Body Battery (namiesto HRV), ukaz ho v riadku HRV
-        if (bb != null && bb[0] != null) {
-            rows[1] = [tx("BodyBat"), bb[0], tx("Max") + " " + r(bb[1]).format("%d"), null,
+        // Hodinky bez HRV (alebo HRV dnes chyba): namiesto "HRV --" riadok Body Battery
+        if ((bb != null && bb[0] != null) || hrv[1] == null) {
+            var hasBb = bb != null && bb[1] != null;
+            rows[1] = [tx("BodyBat"), hasBb ? bb[0] : null,
+                hasBb ? tx("Max") + " " + r(bb[1]).format("%d") : "--", null,
                 tx("BodyBatLong")];
         }
 
