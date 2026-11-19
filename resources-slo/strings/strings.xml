@@ -44,6 +44,7 @@
     <string id="BodyBat">Body Bat.</string>
     <string id="BodyBatLong">Body Battery</string>
     <string id="MornShort">Rano</string>
+    <string id="MornMid">Sviez. rano</string>
     <string id="MornLong">Sviezost rano</string>
     <string id="NotMeasured">nemeria</string>
     <string id="Max">max</string>

@@ -65,6 +65,7 @@ class ReadinessView extends WatchUi.View {
             "BodyBatLong" => WatchUi.loadResource(Rez.Strings.BodyBatLong),
             "MornShort" => WatchUi.loadResource(Rez.Strings.MornShort),
             "MornLong" => WatchUi.loadResource(Rez.Strings.MornLong),
+            "MornMid" => WatchUi.loadResource(Rez.Strings.MornMid),
             "Hrv" => WatchUi.loadResource(Rez.Strings.Hrv),
             "Bb" => WatchUi.loadResource(Rez.Strings.Bb),
             "Factors" => WatchUi.loadResource(Rez.Strings.Factors),
@@ -422,7 +423,8 @@ class ReadinessView extends WatchUi.View {
         if (mor != null && sNow != null && mor.size() > 2 && mor[1] != null && mor[2] != null) {
             var sMorn = r(mor[0]);
             if (sMorn != null && (sMorn - sNow > 2 || sNow - sMorn > 2)) {
-                mornRow = [tx("MornShort"), mor[2], signed(mor[1]) + "%", null, tx("MornLong"), true];
+                mornRow = [tx("MornShort"), mor[2], signed(mor[1]) + "%", null, tx("MornLong"), true,
+                    tx("MornMid")];
             }
         }
 
@@ -487,6 +489,9 @@ class ReadinessView extends WatchUi.View {
         for (var j = 0; j < rows.size(); j++) {
             if (dc.getTextWidthInPixels(rows[j][4] as String, _rowFont) <= room) {
                 rows[j][0] = rows[j][4];
+            } else if (rows[j].size() > 6 &&
+                    dc.getTextWidthInPixels(rows[j][6] as String, _rowFont) <= room) {
+                rows[j][0] = rows[j][6];   // stredne dlhy popis (napr. "Morning F.")
             }
         }
         var y = top;
