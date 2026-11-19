@@ -53,10 +53,11 @@ class ReadinessGlance extends WatchUi.GlanceView {
 
         var h = dc.getHeight();
         var vl = Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER;
-        var lineY = h * 0.68;
+        var lineY = h * 0.70;
 
-        dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(0, h * 0.28, Graphics.FONT_XTINY, WatchUi.loadResource(Rez.Strings.Title), vl);
+        // nadpis biely a vacsi (ako nazvy ostatnych glances, napr. Recovery)
+        dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(0, h * 0.27, Graphics.FONT_TINY, WatchUi.loadResource(Rez.Strings.Title), vl);
 
         if (score == null) {
             dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
