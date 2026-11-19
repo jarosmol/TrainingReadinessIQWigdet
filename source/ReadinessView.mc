@@ -475,8 +475,11 @@ class ReadinessView extends WatchUi.View {
             all.addAll(rows);
             rows = all;
         }
-        // viac riadkov = hustejsie, aby sa vsetko zmestilo aj na mensie displeje
-        var rowH = fh * (rows.size() >= 6 ? 1.08 : (rows.size() == 5 ? 1.18 : 1.32));
+        // Riadky rozlozene tak, aby pata skoncila symetricky k nadpisu (cy + 0.30 h):
+        // pri 4 riadkoch sa nedrzia hore, pri 5-6 sa zhustia. Vzdy 1.05 az 1.5 vysky pisma.
+        var rowH = h * 0.60 / (rows.size() + 1.6);
+        if (rowH < fh * 1.05) { rowH = fh * 1.05; }
+        if (rowH > fh * 1.5) { rowH = fh * 1.5; }
 
         var xL = cx - w * 0.36;
         var xS = cx + w * 0.02;
