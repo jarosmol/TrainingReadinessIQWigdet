@@ -416,15 +416,15 @@ class ReadinessView extends WatchUi.View {
         var form = _result["form"];
 
         // Ranna sviezost (pred dnesnym treningom) - samostatny bledy riadok nad zlozkami,
-        // iba ak sa lisi od aktualnej (po treningu)
+        // za rovnakej podmienky ako ranne skore na prehlade (lisi sa o viac ako 2 body)
         var mornRow = null;
-        if (mor != null && form[1] != null && mor.size() > 2 && mor[1] != null && mor[2] != null) {
-            if (r(form[1]) != r(mor[1])) {
+        var sNow = r(_result["score"]);
+        if (mor != null && sNow != null && mor.size() > 2 && mor[1] != null && mor[2] != null) {
+            var sMorn = r(mor[0]);
+            if (sMorn != null && (sMorn - sNow > 2 || sNow - sMorn > 2)) {
                 mornRow = [tx("MornShort"), mor[2], signed(mor[1]) + "%", null, tx("MornLong"), true];
             }
         }
-        // s riadkom navyse mierne hustejsie, aby sa vsetko zmestilo aj na Vivoactive 4S
-        var rowH = fh * ((mornRow != null) ? 1.18 : 1.32);
 
         // nadpis na rovnakom mieste a rovnakym pismom ako na strankach s historiou
         var top = cy - h * 0.30;
@@ -451,13 +451,21 @@ class ReadinessView extends WatchUi.View {
                 rhr[1] == null ? null : baseDays(rhr), tx("RhrLong")]
         ] as Array<Array>;
 
-        // Ak sa v skore pouzilo Body Battery (namiesto HRV), ukaz ho v riadku HRV
-        // Hodinky bez HRV (alebo HRV dnes chyba): namiesto "HRV --" riadok Body Battery
+        // Body Battery: ak sa pouzilo v skore (HRV chyba alebo este zbiera priemer) alebo HRV
+        // hodinky nemeraju. Ak HRV namerana je (nove hodinky, priemer sa este zbiera - "3d"),
+        // riadok HRV ostane a Body Battery sa prida pod sviezost; inak nahradi "HRV --".
         if ((bb != null && bb[0] != null) || hrv[1] == null) {
             var hasBb = bb != null && bb[1] != null;
-            rows[1] = [tx("BodyBat"), hasBb ? bb[0] : null,
+            var bbRow = [tx("BodyBat"), hasBb ? bb[0] : null,
                 hasBb ? tx("Max") + " " + r(bb[1]).format("%d") : "--", null,
                 tx("BodyBatLong")];
+            if (hrv[1] != null) {
+                var withBb = [rows[0], bbRow] as Array<Array>;
+                for (var q = 1; q < rows.size(); q++) { withBb.add(rows[q]); }
+                rows = withBb;
+            } else {
+                rows[1] = bbRow;
+            }
         }
 
         if (mornRow != null) {
@@ -465,6 +473,8 @@ class ReadinessView extends WatchUi.View {
             all.addAll(rows);
             rows = all;
         }
+        // viac riadkov = hustejsie, aby sa vsetko zmestilo aj na mensie displeje
+        var rowH = fh * (rows.size() >= 6 ? 1.08 : (rows.size() == 5 ? 1.18 : 1.32));
 
         var xL = cx - w * 0.36;
         var xS = cx + w * 0.02;
