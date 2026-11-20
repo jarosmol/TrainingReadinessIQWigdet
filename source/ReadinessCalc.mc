@@ -21,7 +21,7 @@ module ReadinessCalc {
     const BASE_DAYS = 27;     // baseline HRV a tepu = predchadzajucich 27 dni (~4 tyzdne)
     const K_CTL = 0.976472;   // exp(-1/42): denny pokles fitness (intervals.icu)
     const K_ATL = 0.866878;   // exp(-1/7):  denny pokles unavy
-    const MIN_BASELINE = 7;   // minimalny pocet dni pre baseline HRV / tepu
+    const MIN_BASELINE = 6;   // HRV / tep sa zapocita od 7. namerane dna (dnes + 6 predoslych dni)
 
     function clamp(x, lo, hi) {
         if (x < lo) { return lo; }

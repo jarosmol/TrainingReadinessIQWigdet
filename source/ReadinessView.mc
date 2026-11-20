@@ -510,7 +510,8 @@ class ReadinessView extends WatchUi.View {
             } else {
                 var days = rows[i][3] as Number or Null;
                 if (days != null) {
-                    scText = days.format("%d") + "d";
+                    // pocet nameranych dni vratane dneska z potrebnych 7, napr. "2/7"
+                    scText = (days + 1).format("%d") + "/7";
                 }
             }
             dc.setColor(pale ? Graphics.COLOR_DK_GRAY : scoreColor(sc), Graphics.COLOR_TRANSPARENT);

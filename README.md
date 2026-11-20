@@ -59,8 +59,8 @@ check *Settings → Connections → Garmin* in intervals.icu.
 - Body Battery is **never combined with HRV** – Garmin derives it partly from HRV, so using both would count recovery twice.
   The morning peak is used (not the current value), so the score does not drop during the day. Between midnight and 5:00 the last known morning peak (yesterday's) is used.
 - Missing factors are skipped and the weights are re-normalised.
-- HRV and resting HR need at least **7 days** of data in the last 4 weeks. Until then the factor is skipped and the
-  detail screen shows the number of days collected (e.g. `3d`).
+- HRV and resting HR need at least **7 measured days** (today + 6 previous days in the last 4 weeks). Until then the
+  factor is skipped and the factors screen shows the days collected instead of the score (e.g. `2/7`).
 - Bands and colours as in Garmin Training Readiness: **95+ Prime** (purple), 75–94 High (blue), 50–74 Moderate (green),
   25–49 Low (orange), below 25 Poor (red). Colours come from the 64-colour palette of MIP displays, so they look the same on every watch.
 - **Current vs. morning score.** The big number is the *current* score: after a workout intervals.icu raises fatigue,
