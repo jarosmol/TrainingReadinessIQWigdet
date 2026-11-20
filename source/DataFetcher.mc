@@ -92,21 +92,28 @@ class DataFetcher {
         });
         if (it == null) { return out; }
         var today = DataFetcher.dateStr(0);
-        var found = {};
+        // Bez Gregorian.info pre kazdu vzorku (pomale): den a hodina z casu v sekundach.
+        var midnight = Time.today().value();
+        var best = [null, null, null];     // maxima pre dnes, vcera, predvcerom (0-12 h)
         var sample = it.next();
         while (sample != null) {
             var v = sample.data;
             var when = sample.when;
             if (v != null && when != null) {
-                var g = Gregorian.info(when, Time.FORMAT_SHORT);
-                if ((g.hour as Number) < 12) {
-                    var key = (g.year as Number).format("%04d") + "-" +
-                        (g.month as Number).format("%02d") + "-" + (g.day as Number).format("%02d");
-                    var cur = found.get(key) as Float or Null;
-                    if (cur == null || v > cur) { found.put(key, v.toFloat()); }
+                var t = when.value();
+                var ago = 0;                // 0 = dnes, 1 = vcera, 2 = predvcerom
+                var dayStart = midnight;
+                while (t < dayStart && ago < 3) { dayStart -= 86400; ago++; }
+                if (ago < 3 && t - dayStart < 12 * 3600) {
+                    var cur = best[ago] as Float or Null;
+                    if (cur == null || v > cur) { best[ago] = v.toFloat(); }
                 }
             }
             sample = it.next();
+        }
+        var found = {};
+        for (var a = 1; a < 3; a++) {
+            if (best[a] != null) { found.put(DataFetcher.dateStr(a), best[a]); }
         }
         // dnesok riesi readBodyBatteryPeak; ulozene hodnoty maju prednost
         var fk = found.keys();

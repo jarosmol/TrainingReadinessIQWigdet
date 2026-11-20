@@ -72,21 +72,45 @@ module ReadinessCalc {
     function hrvScore(today, baseline) {
         if (today == null || baseline.size() < MIN_BASELINE) { return null; }
         var ms = meanSd(baseline);
-        var sd = ms[1];
-        var floor = ms[0] * 0.05;
-        if (sd < floor) { sd = floor; }
-        if (sd <= 0.0) { return null; }
-        var z = (today - ms[0]) / sd;
-        return clamp(85.0 + 25.0 * z, 5.0, 100.0);
+        return hrvFromStats(today, ms[0], ms[1]);
     }
 
     function rhrScore(today, baseline) {
         if (today == null || baseline.size() < MIN_BASELINE) { return null; }
         var ms = meanSd(baseline);
-        var sd = ms[1];
+        return rhrFromStats(today, ms[0], ms[1]);
+    }
+
+    function hrvFromStats(today, mean, sd) {
+        var floor = mean * 0.05;
+        if (sd < floor) { sd = floor; }
+        if (sd <= 0.0) { return null; }
+        var z = (today - mean) / sd;
+        return clamp(85.0 + 25.0 * z, 5.0, 100.0);
+    }
+
+    function rhrFromStats(today, mean, sd) {
         if (sd < 1.0) { sd = 1.0; }
-        var z = (today - ms[0]) / sd;
+        var z = (today - mean) / sd;
         return clamp(85.0 - 25.0 * z, 5.0, 100.0);
+    }
+
+    // Skore z klzaveho okna: w = [pocet, sucet, sucet stvorcov] predoslych dni.
+    function windowScore(today, w, isHrv) {
+        var n = w[0];
+        if (today == null || n < MIN_BASELINE) { return null; }
+        var mean = w[1] / n;
+        var v = (n > 1) ? (w[2] - w[1] * w[1] / n) / (n - 1) : 0.0;
+        var sd = (v > 0.0) ? Math.sqrt(v) : 0.0;
+        return isHrv ? hrvFromStats(today, mean, sd) : rhrFromStats(today, mean, sd);
+    }
+
+    // Pridanie (sign = 1) / odobratie (sign = -1) hodnoty v klzavom okne.
+    function windowAdd(w, v, sign) {
+        if (v == null) { return; }
+        w[0] = w[0] + sign;
+        w[1] = w[1] + sign * v;
+        w[2] = w[2] + sign * v * v;
     }
 
     function sleepScoreFrom(score, secs) {
@@ -234,30 +258,47 @@ module ReadinessCalc {
         };
     }
 
-    // RANNE skore dna keys[i]: sviezost zo stavu pred treningom toho dna, spanok, HRV
-    // a tep toho dna, baseline z 27 predchadzajucich dni.
-    // bbPeak: ranne maximum Body Battery toho dna (ulozene widgetom alebo z historie
-    // senzorov hodiniek), alebo null - pouzije sa rovnako ako dnes, iba ak chyba HRV.
-    function dayScore(days, keys, i, bbPeak) {
-        var d = keys[i];
-        var mf = morningForm(days, keys, i);
-        var hScore = hrvScore(field(days, d, 0),
-            baselineWindow(days, keys, i + 1, i + 1 + BASE_DAYS, null, 0));
-        var rScore = rhrScore(field(days, d, 1),
-            baselineWindow(days, keys, i + 1, i + 1 + BASE_DAYS, null, 1));
-        var sScore = sleepScoreFrom(field(days, d, 3), field(days, d, 2));
-        var bScore = (hScore == null) ? bodyBatteryScore(bbPeak) : null;
-        return combine([[mf[0], W_FORM], [hScore, W_HRV], [bScore, W_BB],
-                        [sScore, W_SLEEP], [rScore, W_RHR]])[0];
-    }
-
-    // Ranne skore za poslednych n dni: index 0 = dnes. Dnesok doplni volajuci
-    // rannym skore z compute() (s nahradnymi hodnotami z vcera a Body Battery).
-    // bbPeaks: Dictionary datum -> ranne maximum Body Battery (moze byt prazdny).
+    // RANNE skore za poslednych n dni: index 0 = dnes (volajuci ho nahradi rannym skore
+    // z compute()). Pre kazdy den: sviezost rano toho dna, spanok, HRV a tep toho dna
+    // porovnane s 27 predchadzajucimi dnami. bbPeaks: datum -> ranne maximum Body Battery
+    // (pouzije sa, iba ak chyba HRV skore).
+    // Baseline sa pocita klzavym oknom (sucty), nie opakovane pre kazdy den - inak by
+    // vypocet na hodinkach trval prilis dlho (Watchdog Tripped Error).
     function history(days, keys, n, bbPeaks) {
+        var total = keys.size();
+        var hv = new [total];
+        var rv = new [total];
+        for (var k = 0; k < total; k++) {
+            hv[k] = field(days, keys[k], 0);
+            rv[k] = field(days, keys[k], 1);
+        }
+        // okno pre den 0: indexy 1 .. BASE_DAYS
+        var hw = [0, 0.0, 0.0];
+        var rw = [0, 0.0, 0.0];
+        for (var m = 1; m <= BASE_DAYS && m < total; m++) {
+            windowAdd(hw, hv[m], 1);
+            windowAdd(rw, rv[m], 1);
+        }
         var out = [];
         for (var i = 0; i < n; i++) {
-            out.add(dayScore(days, keys, i, bbPeaks.get(keys[i])));
+            if (i > 0) {
+                // posun okna: odober den i, pridaj den i + BASE_DAYS
+                windowAdd(hw, hv[i], -1);
+                windowAdd(rw, rv[i], -1);
+                var add = i + BASE_DAYS;
+                if (add < total) {
+                    windowAdd(hw, hv[add], 1);
+                    windowAdd(rw, rv[add], 1);
+                }
+            }
+            var d = keys[i];
+            var mf = morningForm(days, keys, i);
+            var hScore = windowScore(hv[i], hw, true);
+            var rScore = windowScore(rv[i], rw, false);
+            var sScore = sleepScoreFrom(field(days, d, 3), field(days, d, 2));
+            var bScore = (hScore == null) ? bodyBatteryScore(bbPeaks.get(d)) : null;
+            out.add(combine([[mf[0], W_FORM], [hScore, W_HRV], [bScore, W_BB],
+                             [sScore, W_SLEEP], [rScore, W_RHR]])[0]);
         }
         return out;
     }

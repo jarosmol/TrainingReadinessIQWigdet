@@ -90,6 +90,9 @@ click paths, keep explanations practical.
 - SDK 9.3 strict typing: cast array elements before methods (`(x as Number).format`), static
   functions can't see class consts, avoid re-declaring the same loop var name in one function,
   makeWebRequest callback needs exact parameter types.
+- Watchdog ("Code Executed Too Long"): all work in one callback must stay cheap. History uses a
+  sliding-window baseline (sums), BB history uses epoch math – no per-day array rebuilds, no
+  Gregorian.info per sample.
 - Garmin's fonts: digits sit low in VCENTER; MIP displays need exact 64-colour palette values.
 - Low scores are often caused by **duplicate activities in intervals.icu** (Garmin Connect + Strava /
   manual upload). Recommend keeping Garmin as the only activity source.
