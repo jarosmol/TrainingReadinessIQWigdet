@@ -22,7 +22,8 @@ class ReadinessView extends WatchUi.View {
     var _page = 0;                  // 0 prehlad, 1 zlozky, 2 historia 7 dni, 3 historia 30 dni
     var _t;                         // nacitane texty v jazyku hodiniek
     var _small = null;              // mensie pismo pre spodne popisky (vid smallFont)
-    var _rowFont = null;            // pismo riadkov so zlozkami (na AMOLED mierne mensie)
+    var _rowFont = null;
+    var _titleFont = null;          // nadpisy stran (na AMOLED o nieco vacsie)            // pismo riadkov so zlozkami (na AMOLED mierne mensie)
 
     function initialize() {
         View.initialize();
@@ -249,6 +250,7 @@ class ReadinessView extends WatchUi.View {
         if (_small == null) {
             _small = smallFont(dc, w, 0.75);
             _rowFont = smallFont(dc, w, 0.82);
+            _titleFont = smallFont(dc, w, 1.12);
         }
         var cy = h / 2;
 
@@ -328,11 +330,11 @@ class ReadinessView extends WatchUi.View {
         var inner = rad - pen;
         var vc = Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER;
 
-        dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(cx, cy - inner * 0.66, Graphics.FONT_XTINY, tx("Title"), vc);
+        dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(cx, cy - inner * 0.66, _titleFont, tx("Title"), vc);
         // cislo verzie drobne nad nadpisom
         dc.setColor(0x555555, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(cx, cy - inner * 0.66 - dc.getFontHeight(Graphics.FONT_XTINY) * 0.85, _small,
+        dc.drawText(cx, cy - inner * 0.66 - dc.getFontHeight(_titleFont) * 0.85, _small,
             "v" + tx("AppVersion"), vc);
 
         var scoreText = score == null ? "--" : score.format("%d");
@@ -430,8 +432,8 @@ class ReadinessView extends WatchUi.View {
 
         // nadpis na rovnakom mieste a rovnakym pismom ako na strankach s historiou
         var top = cy - h * 0.30;
-        dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(cx, top, Graphics.FONT_XTINY, tx("Factors"),
+        dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(cx, top, _titleFont, tx("Factors"),
             Graphics.TEXT_JUSTIFY_CENTER | vc);
 
         var hrv = _result["hrv"];
@@ -521,7 +523,10 @@ class ReadinessView extends WatchUi.View {
             dc.setColor(pale ? Graphics.COLOR_LT_GRAY : scoreColor(sc), Graphics.COLOR_TRANSPARENT);
             dc.drawText(xS, y, _rowFont, scText,
                 Graphics.TEXT_JUSTIFY_CENTER | vc);
-            dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
+            // hodnoty, ktore sa do skore nepocitaju, su bledsie ako zapocitane (LT_GRAY);
+            // na AMOLED medzistupen 0x808080, na MIP displejoch tmavosiva z palety
+            dc.setColor(pale ? (w >= 360 ? 0x808080 : Graphics.COLOR_DK_GRAY) : Graphics.COLOR_LT_GRAY,
+                Graphics.COLOR_TRANSPARENT);
             dc.drawText(xV, y, _rowFont, value, Graphics.TEXT_JUSTIFY_RIGHT | vc);
         }
 
@@ -536,8 +541,8 @@ class ReadinessView extends WatchUi.View {
         var hist = part("hist");
         var labels = part("histDays");
 
-        dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(cx, cy - h * 0.30, Graphics.FONT_XTINY, tx("Last7"), vcC);
+        dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(cx, cy - h * 0.30, _titleFont, tx("Last7"), vcC);
 
         if (hist == null || labels == null) {
             dc.drawText(cx, cy, Graphics.FONT_XTINY, tx("Refresh"), vcC);
@@ -570,7 +575,7 @@ class ReadinessView extends WatchUi.View {
                 dc.drawText(x, baseY - fh * 0.55, Graphics.FONT_XTINY, "-", vcC);
             }
 
-            dc.setColor(idx == 0 ? Graphics.COLOR_WHITE : Graphics.COLOR_LT_GRAY,
+            dc.setColor(Graphics.COLOR_WHITE,
                 Graphics.COLOR_TRANSPARENT);
             dc.drawText(x, baseY + fh * 0.65, _small, labels[idx], vcC);
         }
@@ -589,8 +594,8 @@ class ReadinessView extends WatchUi.View {
         var labels = part("histDays");
         var fh = dc.getFontHeight(Graphics.FONT_XTINY);
 
-        dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(cx, cy - h * 0.30, Graphics.FONT_XTINY, tx("Last30"), vcC);
+        dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(cx, cy - h * 0.30, _titleFont, tx("Last30"), vcC);
 
         if (hist == null || labels == null || hist.size() < 30) {
             dc.drawText(cx, cy, Graphics.FONT_XTINY, tx("Refresh"), vcC);
@@ -625,7 +630,7 @@ class ReadinessView extends WatchUi.View {
                 if (mx == null || sc > mx) { mx = sc; }
             }
             if (i % 7 == 0) {
-                dc.setColor(i == 0 ? Graphics.COLOR_WHITE : Graphics.COLOR_LT_GRAY,
+                dc.setColor(Graphics.COLOR_WHITE,
                     Graphics.COLOR_TRANSPARENT);
                 dc.drawText(x, baseY + fh * 0.65, _small, labels[i], vcC);
             }
