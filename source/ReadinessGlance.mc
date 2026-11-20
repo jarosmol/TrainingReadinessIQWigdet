@@ -75,7 +75,7 @@ class ReadinessGlance extends WatchUi.GlanceView {
 
         if (morning != null && (morning - score > 2 || score - morning > 2)) {
             var mText = "/" + morning.format("%d");
-            dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
+            dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
             dc.drawText(x, lineY, Graphics.FONT_XTINY, mText, vl);
             x += dc.getTextWidthInPixels(mText, Graphics.FONT_XTINY) + 6;
         } else {

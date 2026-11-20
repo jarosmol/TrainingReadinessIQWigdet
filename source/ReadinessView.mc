@@ -328,7 +328,7 @@ class ReadinessView extends WatchUi.View {
         var inner = rad - pen;
         var vc = Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER;
 
-        dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
+        dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
         dc.drawText(cx, cy - inner * 0.66, Graphics.FONT_XTINY, tx("Title"), vc);
         // cislo verzie drobne nad nadpisom
         dc.setColor(0x555555, Graphics.COLOR_TRANSPARENT);
@@ -345,7 +345,7 @@ class ReadinessView extends WatchUi.View {
         if (showMorning) {
             var numW = dc.getTextWidthInPixels(scoreText, Graphics.FONT_NUMBER_MEDIUM);
             var digitH = dc.getFontHeight(Graphics.FONT_NUMBER_MEDIUM) * 0.62;
-            dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
+            dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
             dc.drawText(cx + numW / 2 + 3, numberY + digitH / 2 - dc.getFontHeight(Graphics.FONT_XTINY) / 2,
                 Graphics.FONT_XTINY, "/" + (ms as Number).format("%d"),
                 Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
@@ -380,7 +380,7 @@ class ReadinessView extends WatchUi.View {
         drawSleepLine(dc, cx, cy + inner * 0.40, line1, hhmm(sleep[1]));
         dc.drawText(cx, cy + inner * 0.60, Graphics.FONT_XTINY, line2, vc);
 
-        dc.setColor(_status == :error ? 0xFFAA00 : Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
+        dc.setColor(_status == :error ? 0xFFAA00 : Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
         dc.drawText(cx, cy + inner * 0.82, _small, footerText(), vc);
     }
 
@@ -430,7 +430,7 @@ class ReadinessView extends WatchUi.View {
 
         // nadpis na rovnakom mieste a rovnakym pismom ako na strankach s historiou
         var top = cy - h * 0.30;
-        dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
+        dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
         dc.drawText(cx, top, Graphics.FONT_XTINY, tx("Factors"),
             Graphics.TEXT_JUSTIFY_CENTER | vc);
 
@@ -501,7 +501,8 @@ class ReadinessView extends WatchUi.View {
         for (var i = 0; i < rows.size(); i++) {
             y = top + rowH * (i + 1.2);
             var sc = r(rows[i][1]);
-            var pale = rows[i].size() > 5;   // ranna sviezost
+            var pale = rows[i].size() > 5;   // ranna sviezost (svetlosivo)
+            var dim = false;                 // HRV / tep sa este zbiera (tmavosivo)
             var value = rows[i][2] as String;
             var scText = "--";
             if (sc != null) {
@@ -511,20 +512,21 @@ class ReadinessView extends WatchUi.View {
                 // nameranych dni vratane dneska z potrebnych 7, napr. "52 (2/7)"
                 var days = rows[i][3] as Number or Null;
                 if (days != null) {
-                    pale = true;
+                    dim = true;
                     value = value + " (" + (days + 1).format("%d") + "/7)";
                 }
             }
-            dc.setColor(pale ? Graphics.COLOR_DK_GRAY : Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
+            var grey = dim ? Graphics.COLOR_DK_GRAY : Graphics.COLOR_LT_GRAY;
+            dc.setColor((pale || dim) ? grey : Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
             dc.drawText(xL, y, _rowFont, rows[i][0], Graphics.TEXT_JUSTIFY_LEFT | vc);
-            dc.setColor(pale ? Graphics.COLOR_DK_GRAY : scoreColor(sc), Graphics.COLOR_TRANSPARENT);
+            dc.setColor((pale || dim) ? grey : scoreColor(sc), Graphics.COLOR_TRANSPARENT);
             dc.drawText(xS, y, _rowFont, scText,
                 Graphics.TEXT_JUSTIFY_CENTER | vc);
-            dc.setColor(pale ? Graphics.COLOR_DK_GRAY : Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
+            dc.setColor(dim ? Graphics.COLOR_DK_GRAY : Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
             dc.drawText(xV, y, _rowFont, value, Graphics.TEXT_JUSTIFY_RIGHT | vc);
         }
 
-        dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
+        dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
         dc.drawText(cx, y + rowH * 1.4, _small, tx("DetailFooter"),
             Graphics.TEXT_JUSTIFY_CENTER | vc);
     }
@@ -535,7 +537,7 @@ class ReadinessView extends WatchUi.View {
         var hist = part("hist");
         var labels = part("histDays");
 
-        dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
+        dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
         dc.drawText(cx, cy - h * 0.30, Graphics.FONT_XTINY, tx("Last7"), vcC);
 
         if (hist == null || labels == null) {
@@ -576,6 +578,7 @@ class ReadinessView extends WatchUi.View {
 
         dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
         dc.drawLine(left, baseY, left + areaW, baseY);
+        dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
         dc.drawText(cx, baseY + fh * 1.75, _small, tx("DayOfMonth"), vcC);
     }
 
@@ -587,7 +590,7 @@ class ReadinessView extends WatchUi.View {
         var labels = part("histDays");
         var fh = dc.getFontHeight(Graphics.FONT_XTINY);
 
-        dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
+        dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
         dc.drawText(cx, cy - h * 0.30, Graphics.FONT_XTINY, tx("Last30"), vcC);
 
         if (hist == null || labels == null || hist.size() < 30) {
@@ -635,7 +638,7 @@ class ReadinessView extends WatchUi.View {
         if (cnt > 0) {
             var avg = (sum / cnt + 0.5).toNumber();
             // rovnaka farba ako ostatne spodne popisky
-            dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
+            dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
             dc.drawText(cx, baseY + fh * 1.75, _small,
                 Lang.format(tx("Stats"), [avg.format("%d"), (mn as Number).format("%d"),
                     (mx as Number).format("%d")]), vcC);
