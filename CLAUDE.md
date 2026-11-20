@@ -83,7 +83,7 @@ click paths, keep explanations practical.
   ("Freshness", "Body Battery", "Resting HR"), fallbacks "Fresh", "Body Bat.", "RestHR".
   SK texts without diacritics ("Sviezost", "Spanok"). Version tiny above title on overview.
 - Colours: page titles WHITE; morning values ("/87", morning row, ring segment) and bottom captions
-  LT_GRAY; collecting HRV/RHR row and version DK_GRAY (owner found dark grey hard to read).
+  LT_GRAY, collecting HRV/RHR row LT_GRAY like the morning row; version DK_GRAY (owner found dark grey hard to read).
 
 ## Known gotchas
 - SDK 9.3 strict typing: cast array elements before methods (`(x as Number).format`), static

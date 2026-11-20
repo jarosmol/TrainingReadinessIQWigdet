@@ -501,8 +501,8 @@ class ReadinessView extends WatchUi.View {
         for (var i = 0; i < rows.size(); i++) {
             y = top + rowH * (i + 1.2);
             var sc = r(rows[i][1]);
-            var pale = rows[i].size() > 5;   // ranna sviezost (svetlosivo)
-            var dim = false;                 // HRV / tep sa este zbiera (tmavosivo)
+            // ranna sviezost a HRV / tep, ktore sa este zbieraju: cely riadok svetlosivo
+            var pale = rows[i].size() > 5;
             var value = rows[i][2] as String;
             var scText = "--";
             if (sc != null) {
@@ -512,17 +512,16 @@ class ReadinessView extends WatchUi.View {
                 // nameranych dni vratane dneska z potrebnych 7, napr. "52 (2/7)"
                 var days = rows[i][3] as Number or Null;
                 if (days != null) {
-                    dim = true;
+                    pale = true;
                     value = value + " (" + (days + 1).format("%d") + "/7)";
                 }
             }
-            var grey = dim ? Graphics.COLOR_DK_GRAY : Graphics.COLOR_LT_GRAY;
-            dc.setColor((pale || dim) ? grey : Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
+            dc.setColor(pale ? Graphics.COLOR_LT_GRAY : Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
             dc.drawText(xL, y, _rowFont, rows[i][0], Graphics.TEXT_JUSTIFY_LEFT | vc);
-            dc.setColor((pale || dim) ? grey : scoreColor(sc), Graphics.COLOR_TRANSPARENT);
+            dc.setColor(pale ? Graphics.COLOR_LT_GRAY : scoreColor(sc), Graphics.COLOR_TRANSPARENT);
             dc.drawText(xS, y, _rowFont, scText,
                 Graphics.TEXT_JUSTIFY_CENTER | vc);
-            dc.setColor(dim ? Graphics.COLOR_DK_GRAY : Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
+            dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
             dc.drawText(xV, y, _rowFont, value, Graphics.TEXT_JUSTIFY_RIGHT | vc);
         }
 
