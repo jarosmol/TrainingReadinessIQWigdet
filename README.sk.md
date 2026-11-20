@@ -45,7 +45,7 @@ netreba nic menit.
 Pasma a farby ako Garmin Training Readiness: **95+ Vynikajuca** (fialova), 75–94 Vysoka (modra), 50–74 Stredna (zelena),
 25–49 Nizka (oranzova), pod 25 Slaba (cervena). Farby su z 64-farebnej palety MIP displejov, takze vyzeraju rovnako na vsetkych hodinkach.
 
-HRV a tep sa zapocitaju od **7. nameraneho dna** (dnes + 6 predoslych dni za posledne 4 tyzdne). Dovtedy sa zlozka vynecha a na obrazovke zloziek sa namiesto skore ukaze pocet nameranych dni, napr. `2/7`.
+HRV a tep sa zapocitaju od **7. nameraneho dna** (dnes + 6 predoslych dni za posledne 4 tyzdne). Dovtedy sa zlozka vynecha a jej riadok na obrazovke zloziek je sivy s `--` a poctom nameranych dni, napr. `52 (2/7)`.
 
 ### Ovladanie
 - **Stlacenie / klepnutie** – prepina obrazovky: **prehlad → zlozky skore → historia 7 dni → historia 30 dni**;

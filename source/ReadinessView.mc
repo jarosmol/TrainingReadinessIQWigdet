@@ -502,23 +502,26 @@ class ReadinessView extends WatchUi.View {
             y = top + rowH * (i + 1.2);
             var sc = r(rows[i][1]);
             var pale = rows[i].size() > 5;   // ranna sviezost
-            dc.setColor(pale ? Graphics.COLOR_DK_GRAY : Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(xL, y, _rowFont, rows[i][0], Graphics.TEXT_JUSTIFY_LEFT | vc);
+            var value = rows[i][2] as String;
             var scText = "--";
             if (sc != null) {
                 scText = sc.format("%d");
             } else {
+                // HRV / tep sa este zbiera: riadok bledo, skore "--" a pri hodnote pocet
+                // nameranych dni vratane dneska z potrebnych 7, napr. "52 (2/7)"
                 var days = rows[i][3] as Number or Null;
                 if (days != null) {
-                    // pocet nameranych dni vratane dneska z potrebnych 7, napr. "2/7"
-                    scText = (days + 1).format("%d") + "/7";
+                    pale = true;
+                    value = value + " (" + (days + 1).format("%d") + "/7)";
                 }
             }
+            dc.setColor(pale ? Graphics.COLOR_DK_GRAY : Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
+            dc.drawText(xL, y, _rowFont, rows[i][0], Graphics.TEXT_JUSTIFY_LEFT | vc);
             dc.setColor(pale ? Graphics.COLOR_DK_GRAY : scoreColor(sc), Graphics.COLOR_TRANSPARENT);
             dc.drawText(xS, y, _rowFont, scText,
                 Graphics.TEXT_JUSTIFY_CENTER | vc);
             dc.setColor(pale ? Graphics.COLOR_DK_GRAY : Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(xV, y, _rowFont, rows[i][2], Graphics.TEXT_JUSTIFY_RIGHT | vc);
+            dc.drawText(xV, y, _rowFont, value, Graphics.TEXT_JUSTIFY_RIGHT | vc);
         }
 
         dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);

@@ -63,7 +63,7 @@ click paths, keep explanations practical.
 - Freshness = intervals.icu Form (CTL−ATL) as % of CTL, mapped
   [-50,-40,-30,-20,-10,0,10] → [10,25,45,60,75,85,95] (intervals.icu zones).
 - HRV / RHR: today vs previous 27 days (needs 7 measured days = today + ≥6 previous, MIN_BASELINE 6;
-  until then the score column shows days collected incl. today, e.g. "2/7"),
+  until then the row is grey, score "--", value shows days incl. today, e.g. "52 (2/7)"),
   z-score → 85 ± 25·z clamped 5..100 (**85 = your average**, footer says so). SD floor 5 % of mean (HRV), 1 bpm (RHR).
 - Sleep: sleepScore, else hours [4,5,6,7,8] → [20,40,65,85,100].
 - BB peak [30,50,70,85,95] → [10,40,70,90,100].

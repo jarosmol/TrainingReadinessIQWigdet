@@ -60,7 +60,7 @@ check *Settings → Connections → Garmin* in intervals.icu.
   The morning peak is used (not the current value), so the score does not drop during the day. Between midnight and 5:00 the last known morning peak (yesterday's) is used.
 - Missing factors are skipped and the weights are re-normalised.
 - HRV and resting HR need at least **7 measured days** (today + 6 previous days in the last 4 weeks). Until then the
-  factor is skipped and the factors screen shows the days collected instead of the score (e.g. `2/7`).
+  factor is skipped and its row on the factors screen is grey with `--` and the days collected (e.g. `52 (2/7)`).
 - Bands and colours as in Garmin Training Readiness: **95+ Prime** (purple), 75–94 High (blue), 50–74 Moderate (green),
   25–49 Low (orange), below 25 Poor (red). Colours come from the 64-colour palette of MIP displays, so they look the same on every watch.
 - **Current vs. morning score.** The big number is the *current* score: after a workout intervals.icu raises fatigue,
