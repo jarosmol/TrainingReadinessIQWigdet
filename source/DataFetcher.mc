@@ -230,7 +230,7 @@ class DataFetcher {
         }
         var keys = [] as Array<String>;
         for (var k = 0; k < CHUNKS * CHUNK_DAYS - shift; k++) {
-            keys.add(dateStr(k + shift));
+            keys.add(dateStr(k + shift) as String);
         }
         var bb = (shift == 0) ? readBodyBatteryPeak() : bodyBatteryPeakFor(keys[0]);
         var result = ReadinessCalc.compute(_days, keys, bb);
