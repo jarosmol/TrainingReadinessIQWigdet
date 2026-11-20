@@ -52,6 +52,8 @@ check *Settings → Connections → Garmin* in intervals.icu.
 | **Resting HR** | 15 % | watch | higher than your baseline = worse |
 | **Body Battery** | 20 % | read on the watch | **only when HRV is missing** (e.g. vivoactive 4S): morning peak since midnight, 85 = 90, 70 = 70, 50 = 40 |
 
+- After a workout the current freshness score drops by at least 1.5 points per % of freshness lost since
+  the morning, so training is visible even when you are very fresh (above +10 %, where the table is at its maximum).
 - **Freshness** is what intervals.icu calls *Form*: fitness (~6-week training load) minus fatigue (~7-day load),
   shown as % of fitness. **Positive = rested, negative = tired from recent training.** −23 % means fatigue is
   23 % above your fitness – typical for a productive training block (intervals.icu calls −10 to −30 % *optimal*),

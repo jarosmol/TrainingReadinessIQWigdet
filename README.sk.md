@@ -28,6 +28,9 @@ Na Forerunneri 255 sa widget ovlada tlacidlami: **START** prepina obrazovky, **p
 | **Pokojovy tep** | 15 % | hodinky | vyssi ako vas priemer = horsie |
 | **Body Battery** | 20 % | priamo z hodiniek | **iba ak chyba HRV** (napr. Vivoactive 4S): ranne maximum Body Battery od polnoci, 85 = 90 b., 70 = 70 b., 50 = 40 b. |
 
+Po treningu klesne aktualne skore sviezosti aspon o 1,5 bodu za kazde percento, o ktore sviezost od rana klesla,
+takze trening sa prejavi aj pri velmi vysokej sviezosti (nad +10 %, kde je tabulka na maxime).
+
 **Sviezost** je to, co intervals.icu nazyva *Form*: fitness (zataz za ~6 tyzdnov) minus unava (zataz za ~7 dni),
 v % z fitness. **Kladna = oddychnuty, zaporna = unaveny z posledneho treningu.** −23 % znamena, ze unava je
 o 23 % vyssia ako vasa dlhodoba kondicia – typicke pre produktivny treningovy blok (intervals.icu povazuje

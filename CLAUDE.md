@@ -61,6 +61,8 @@ click paths, keep explanations practical.
   Missing factors → weights renormalised; needs ≥2 factors or freshness alone.
 - Freshness = intervals.icu Form (CTL−ATL) as % of CTL, mapped
   [-50,-40,-30,-20,-10,0,10] → [10,25,45,60,75,85,95] (intervals.icu zones).
+  Current (after today's training) freshness score = min(table, morning score − 1.5 × drop in %)
+  (DROP_PTS), min 5 – so training shows even above +10 % where the table is capped at 95.
 - HRV / RHR: today vs previous 27 days (needs 7 measured days = today + ≥6 previous, MIN_BASELINE 6;
   until then the row is grey, score "--", value shows days incl. today, e.g. "52 (2/7)"),
   z-score → 85 ± 25·z clamped 5..100 (**85 = your average**, footer says so). SD floor 5 % of mean (HRV), 1 bpm (RHR).

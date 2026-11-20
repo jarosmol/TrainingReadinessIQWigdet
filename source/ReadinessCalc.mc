@@ -17,7 +17,11 @@ module ReadinessCalc {
     const W_HRV = 0.30;
     const W_SLEEP = 0.20;
     const W_RHR = 0.15;
-    const W_BB = 0.20;    // Body Battery iba namiesto HRV (prekryva sa so spankom)
+    const W_BB = 0.20;
+    // Pokles sviezosti pocas dna (dnesny trening): aktualne skore sviezosti = ranne skore
+    // minus tolko bodov za kazde percento poklesu (nikdy viac nez podla tabulky). Vdaka tomu
+    // sa trening prejavi aj pri vysokej sviezosti nad +10 %, kde je tabulka na maxime 95.
+    const DROP_PTS = 1.5;    // Body Battery iba namiesto HRV (prekryva sa so spankom)
     const BASE_DAYS = 27;     // baseline HRV a tepu = predchadzajucich 27 dni (~4 tyzdne)
     const K_CTL = 0.976472;   // exp(-1/42): denny pokles fitness (intervals.icu)
     const K_ATL = 0.866878;   // exp(-1/7):  denny pokles unavy
@@ -212,6 +216,13 @@ module ReadinessCalc {
             // dnesny zaznam este nie je - aktualny stav = ranny
             fScore = mf[0];
             fPct = mf[1];
+        } else if (fScore != null && fPct != null && mf[0] != null && mf[1] != null) {
+            var drop = mf[1] - fPct;
+            if (drop > 0) {
+                var alt = mf[0] - DROP_PTS * drop;
+                if (alt < 5.0) { alt = 5.0; }
+                if (alt < fScore) { fScore = alt; }
+            }
         }
 
         // HRV
