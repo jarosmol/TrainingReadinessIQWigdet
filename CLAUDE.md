@@ -80,6 +80,8 @@ click paths, keep explanations practical.
   needs a permission invalid for widgets (`ComplicationSubscriber` → "invalid for watch-app"),
   ActivityMonitor.timeToRecovery is missing on Venu 3/VA5, overlaps with freshness.
 - No background fetching (glance shows last cached score).
+- A new day starts with new sleep: after midnight (until 12:00), while intervals.icu has no sleep for
+  today but has it for yesterday, yesterday is still treated as "today" (DataFetcher `shift`).
 - Labels: overview "Fresh", "BB", "RHR", moon icon for sleep; factors full labels when they fit
   ("Freshness", "Body Battery", "Resting HR"), fallbacks "Fresh", "Body Bat.", "RestHR".
   SK texts without diacritics ("Sviezost", "Spanok"). Version tiny above title on overview.

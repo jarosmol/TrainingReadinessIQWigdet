@@ -71,6 +71,8 @@ HRV a tep sa zapocitaju od **7. nameraneho dna** (dnes + 6 predoslych dni za pos
   s predchadzajucimi 4 tyzdnami.
 - Cislo verzie je drobne nad nadpisom prehladu.
 - **Podrzanie (menu)** – vynutene obnovenie dat.
+- **Novy den zacina az po spanku:** po polnoci widget ukazuje vcerajsie skore, kym do intervals.icu nepride spanok
+  z poslednej noci (najneskor do 12:00), takze sa skore nezmeni o polnoci, ked este nespite.
 - Data sa pri otvoreni widgetu obnovia automaticky, ak su starsie ako 30 minut (dopoludnia 10 minut – Garmin rano
   niekedy posle predbezny pokojovy tep a az neskor ho opravi).
 

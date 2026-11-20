@@ -37,6 +37,8 @@ check *Settings → Connections → Garmin* in intervals.icu.
 - **Tap / START** – cycles screens: **overview → score factors → last 7 days → last 30 days**;
   on button watches (e.g. Forerunner) also **DOWN / UP** (next / previous screen).
 - **Hold / menu** – forces a data refresh.
+- **A new day starts after sleep:** after midnight the widget keeps showing yesterday's score until last night's
+  sleep reaches intervals.icu (at the latest until noon), so the score does not jump at midnight while you are still awake.
 - Data refreshes automatically when the widget is opened and the data is older than 30 minutes
   (10 minutes before noon – Garmin may first send a provisional resting HR in the morning and correct it later).
 

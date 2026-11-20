@@ -220,22 +220,50 @@ class DataFetcher {
             requestChunk();
             return;
         }
-        var keys = [];
-        for (var k = 0; k < CHUNKS * CHUNK_DAYS; k++) {
-            keys.add(dateStr(k));
+        // Novy den zacina az novym spankom: po polnoci (do 12:00), kym intervals.icu nema
+        // dnesny spanok, ale vcerajsi ma, sa ako "dnes" berie este vcerajsok. Inak by sa skore
+        // po polnoci zmenilo, hoci clovek este nespal.
+        var shift = 0;
+        var secs = Time.now().value() - Time.today().value();
+        if (secs < 12 * 3600 && !hasSleep(dateStr(0)) && hasSleep(dateStr(1))) {
+            shift = 1;
         }
-        var result = ReadinessCalc.compute(_days, keys, readBodyBatteryPeak());
+        var keys = [];
+        for (var k = 0; k < CHUNKS * CHUNK_DAYS - shift; k++) {
+            keys.add(dateStr(k + shift));
+        }
+        var bb = (shift == 0) ? readBodyBatteryPeak() : bodyBatteryPeakFor(keys[0]);
+        var result = ReadinessCalc.compute(_days, keys, bb);
         var hist = ReadinessCalc.history(_days, keys, HISTORY_DAYS, bodyBatteryPeaks());
         hist[0] = result["morning"][0];   // historia = ranne skore
         var labels = [];
         for (var k = 0; k < HISTORY_DAYS; k++) {
-            var t = Time.now().subtract(new Time.Duration(k * 86400));
-            labels.add(Gregorian.info(t, Time.FORMAT_SHORT).day.format("%d"));
+            var ds = keys[k] as String;   // "YYYY-MM-DD" -> den v mesiaci
+            labels.add((ds.substring(8, 10).toNumber() as Number).format("%d"));
         }
         result.put("hist", hist);
         result.put("histDays", labels);
         _days = null;
         finish(:ok, result);
+    }
+
+    // Ma den v datach intervals.icu spanok (dlzku alebo skore)?
+    function hasSleep(date) {
+        if (_days == null || !_days.hasKey(date)) { return false; }
+        var rec = _days[date];
+        return rec[2] != null || rec[3] != null;
+    }
+
+    // Ranne maximum Body Battery pre dany den (vcerajsok po polnoci, kym sa nespalo).
+    static function bodyBatteryPeakFor(date) {
+        var stored = Application.Storage.getValue("bbPeak");
+        if (stored instanceof Lang.Dictionary) {
+            var d = stored["d"] as String or Null;
+            if (d != null && d.equals(date)) { return stored["v"]; }
+        }
+        var h = Application.Storage.getValue("bbHist");
+        if (h instanceof Lang.Dictionary && h.hasKey(date)) { return h[date]; }
+        return null;
     }
 
     function parseRecords(data as Array) as Void {
