@@ -228,7 +228,7 @@ class DataFetcher {
         if (secs < 12 * 3600 && !hasSleep(dateStr(0)) && hasSleep(dateStr(1))) {
             shift = 1;
         }
-        var keys = [];
+        var keys = [] as Array<String>;
         for (var k = 0; k < CHUNKS * CHUNK_DAYS - shift; k++) {
             keys.add(dateStr(k + shift));
         }
