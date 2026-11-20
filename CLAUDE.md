@@ -83,8 +83,8 @@ click paths, keep explanations practical.
   SK texts without diacritics ("Sviezost", "Spanok"). Version tiny above title on overview.
 - Colours: page titles LT_GRAY (white was too bright) in `_titleFont` (vector ×1.12 on AMOLED);
   morning values ("/87", ring segment) and bottom captions LT_GRAY; history day labels all WHITE;
-  non-counted rows (morning freshness, collecting HRV/RHR) label+score LT_GRAY, value dimmer
-  (0x808080 AMOLED / DK_GRAY MIP); version DK_GRAY. Owner finds plain dark grey hard to read.
+  non-counted rows (morning freshness, collecting HRV/RHR) whole row 0x8C8C8C on AMOLED,
+  LT_GRAY on MIP (no intermediate grey in the palette); version DK_GRAY. Owner finds plain dark grey hard to read.
 
 ## Known gotchas
 - SDK 9.3 strict typing: cast array elements before methods (`(x as Number).format`), static

@@ -518,15 +518,15 @@ class ReadinessView extends WatchUi.View {
                     value = value + " (" + (days + 1).format("%d") + "/7)";
                 }
             }
-            dc.setColor(pale ? Graphics.COLOR_LT_GRAY : Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
+            // nezapocitane riadky (ranna sviezost, HRV pocas zbierania) cele mierne stmavene:
+            // na AMOLED 0x8C8C8C (medzi svetlo- a tmavosivou), MIP displeje maju len LT_GRAY
+            var paleCol = (w >= 360) ? 0x8C8C8C : Graphics.COLOR_LT_GRAY;
+            dc.setColor(pale ? paleCol : Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
             dc.drawText(xL, y, _rowFont, rows[i][0], Graphics.TEXT_JUSTIFY_LEFT | vc);
-            dc.setColor(pale ? Graphics.COLOR_LT_GRAY : scoreColor(sc), Graphics.COLOR_TRANSPARENT);
+            dc.setColor(pale ? paleCol : scoreColor(sc), Graphics.COLOR_TRANSPARENT);
             dc.drawText(xS, y, _rowFont, scText,
                 Graphics.TEXT_JUSTIFY_CENTER | vc);
-            // hodnoty, ktore sa do skore nepocitaju, su bledsie ako zapocitane (LT_GRAY);
-            // na AMOLED medzistupen 0x808080, na MIP displejoch tmavosiva z palety
-            dc.setColor(pale ? (w >= 360 ? 0x808080 : Graphics.COLOR_DK_GRAY) : Graphics.COLOR_LT_GRAY,
-                Graphics.COLOR_TRANSPARENT);
+            dc.setColor(pale ? paleCol : Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
             dc.drawText(xV, y, _rowFont, value, Graphics.TEXT_JUSTIFY_RIGHT | vc);
         }
 
